@@ -31,7 +31,7 @@ export default class Pipeline extends Component {
     // get pipeline if and job id from url.
     const params = queryString.parse(location.hash.split('?')[1]);
     if (params && params.pipelineId) {
-      const data = await get(`/pipeline/${params.pipelineId}`);
+      const data = await get(`/pipeline/info/${params.pipelineId}`);
       Object.keys(data.plugins).forEach(
         key => data.plugins[key].package = data.plugins[key].name,
       );
@@ -59,8 +59,8 @@ export default class Pipeline extends Component {
       const jobLog = await get(`/job/${jobId}/log`);
       this.setState({
         jobStatus: PIPELINE_STATUS[jobInfo.status],
-        jobStdout: Array.isArray(jobLog.log) && jobLog.log.length > 0 ? jobLog.log[0] : '',
-        jobStderr: Array.isArray(jobLog.log) && jobLog.log.length > 1 ? jobLog.log[1] : '',
+        jobStdout: jobLog.log[0],
+        jobStderr: jobLog.log[1],
       });
       if (jobInfo.status === 3 || jobInfo.status === 2) {
         return;
@@ -97,9 +97,10 @@ export default class Pipeline extends Component {
 
     if (isCreate) {
       const pipelineRes = await post('/pipeline', {
-        config: {
+        config: JSON.stringify({
           plugins,
-        }
+        }),
+        isFile: false,
       });
       this.setState({
         isCreate: false,
@@ -111,9 +112,10 @@ export default class Pipeline extends Component {
       }, 2000);
     } else {
       await put(`/pipeline/${pipelineId}`, {
-        config: {
+        config: JSON.stringify({
           plugins,
-        }
+        }),
+        isFile: false,
       });
       if (showMessage) {
         messageSuccess('Update Pipeline Successfully');
@@ -128,7 +130,12 @@ export default class Pipeline extends Component {
       return;
     }
     await this.updatePipeline(false);
-    const job = await post('/job', { pipelineId });
+    const job = await get('/job/run', {
+      params: {
+        pipelineId, 
+        cwd: CWD,
+      },
+    });
     this.setState({
       jobId: job.id,
     });

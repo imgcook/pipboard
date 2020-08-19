@@ -17,7 +17,7 @@ const config = {
   proxy: {
     '/**': {
       enable: true,
-      target: 'http://127.0.0.1:6927/api',
+      target: 'http://127.0.0.1:6927',
     },
   },
   define: {
