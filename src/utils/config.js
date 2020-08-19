@@ -154,7 +154,8 @@ const PLUGIN_LIST = {
     '@pipcook/plugins-pascalvoc-data-access',
   ],
   dataProcess: [
-    '@pipcook/plugins-image-data-process',
+    '@pipcook/plugins-tensorflow-image-classification-process',
+    '@pipcook/plugins-tfjs-image-classification-process',
   ],
   modelDefine: [
     '@pipcook/plugins-bayesian-model-define',

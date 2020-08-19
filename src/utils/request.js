@@ -1,14 +1,10 @@
 import axios from 'axios';
-import {messageError} from './message';
+import { messageError } from './message';
 
 const createGeneralRequest = (agent) => async (...args) => {
   try {
     const response = await agent(...args);
-    if (response.data.status === true) {
-      return response.data.data;
-    } else {
-      messageError(response.data.message);
-    }
+    return response.data;
   } catch (err) {
     messageError(err.response.data.message);
   }
