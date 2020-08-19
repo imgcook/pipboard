@@ -24,14 +24,14 @@ export default class Pipeline extends Component {
 
   fetchData = async (currentPage) => {
     // check if show job or pipeline from url
-    let queryUrl = '/pipeline/list';
+    let queryUrl = '/pipeline';
     if (location.href.includes('jobs')) {
       this.setState({
         fields: JOB_MAP,
       });
-      queryUrl = '/job/list';
+      queryUrl = '/job';
     }
-    
+
     try {
       const response = await get(queryUrl, {
         params: {
@@ -39,7 +39,8 @@ export default class Pipeline extends Component {
           limit: PAGE_SIZE,
         },
       });
-      const result = response.rows.map((item) => {
+      console.log('resp:', response);
+      const result = response.map((item) => {
         return {
           ...item,
           createdAt: new Date(item.createdAt).toLocaleString(),
@@ -95,5 +96,4 @@ export default class Pipeline extends Component {
       </div>
     );
   }
-  
 }
