@@ -1,6 +1,9 @@
 import ReactDOM from 'react-dom';
 import './global.scss';
 import router from './router';
+import { PipcookClient } from '@pipcook/sdk';
+
+global.pipcookCli = new PipcookClient('http://localhost', 6927);
 
 const ICE_CONTAINER = document.getElementById('ice-container');
 

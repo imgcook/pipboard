@@ -33,14 +33,9 @@ export default class Pipeline extends Component {
     }
 
     try {
-      const response = await get(queryUrl, {
-        params: {
-          offset: (currentPage - 1) * PAGE_SIZE, 
-          limit: PAGE_SIZE,
-        },
-      });
-      console.log('resp:', response);
-      const result = response.map((item) => {
+      const list = await pipcookCli.pipeline.list();
+      console.log('resp:', list);
+      const result = list.map((item) => {
         return {
           ...item,
           createdAt: new Date(item.createdAt).toLocaleString(),
@@ -50,7 +45,7 @@ export default class Pipeline extends Component {
       });
       this.setState({
         models: result,
-        totalCount: response.count,
+        totalCount: list.length,
         currentPage,
       });
     } catch (err) {
