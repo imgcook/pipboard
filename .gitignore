@@ -2,6 +2,7 @@ node_modules
 output
 /lerna-debug.log
 pipcook-pipeline-*
+build/
 .DS_STORE
 .vscode/
 dist
