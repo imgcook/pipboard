@@ -1,5 +1,15 @@
 import React from 'react';
+import { DateTime } from 'luxon';
 import { Button, Dialog, Tag } from '@alifd/next';
+
+/**
+ * Pipeline templates
+ */
+import ImageClassificationPipeline from '@/config/pipelines/image-classification.json';
+import ObjectDetectionPipeline from '@/config/pipelines/object-detection.json';
+import ImageStyleTransferPipeline from '@/config/pipelines/image-style-transfer.json';
+import TextClassificationPipeline from '@/config/pipelines/text-classification.json';
+import TextCreationPipeline from '@/config/pipelines/text-creation.json';
 
 /**
  * !important: This File contains many information that should be returned by backend. For now, just remain these.
@@ -13,18 +23,31 @@ export const MODELLOAD = 'modelLoad';
 export const MODELDEFINE = 'modelDefine';
 export const MODELTRAIN = 'modelTrain';
 export const MODELEVALUATE = 'modelEvaluate';
-export const PLUGINS = [
-  DATACOLLECT,
-  DATAACCESS,
-  DATAPROCESS,
-  MODELLOAD,
-  MODELDEFINE,
-  MODELTRAIN,
-  MODELEVALUATE,
-];
+
+export const PLUGINS = [{
+  id: DATACOLLECT,
+  title: 'Select a dataset',
+}, {
+  id: DATAACCESS,
+  title: 'Access the dataset',
+}, {
+  id: DATAPROCESS,
+  title: 'Process the sample',
+}, {
+  id: MODELLOAD,
+  title: 'Load a model',
+}, {
+  id: MODELDEFINE,
+  title: 'Define a model',
+}, {
+  id: MODELTRAIN,
+  title: 'Train',
+}, {
+  id: MODELEVALUATE,
+  title: 'Evaluate',
+}];
 
 export const PIPELINE_STATUS = ['INIT', 'RUNNING', 'SUCCESS', 'FAIL'];
-
 export const PIPELINE_MAP = [
   {
     name: 'ID',
@@ -58,7 +81,10 @@ export const PIPELINE_MAP = [
   },
   {
     name: 'Created At',
-    field: 'createdAt',
+    cell: (value, index, record) => {
+      const date = DateTime.fromFormat(record.createdAt, 'M/d/yyyy, h:m:s a');
+      return <span>{date.toRelative()}</span>;
+    },
     width: 50,
     sortable: true,
   },
@@ -69,7 +95,7 @@ export const JOB_MAP = [
     name: 'ID',
     width: 50,
     cell: (value, index, record) => {
-      return <a href={`/index.html#/pipeline/info?pipelineId=${record.pipelineId}&jobId=${record.id}`}>
+      return <a href={`/index.html#/job/info?jobId=${record.id}`}>
         {record.id.replace(/-/g, '').slice(0, 12)}
       </a>;
     },
@@ -126,7 +152,14 @@ export const JOB_MAP = [
   {
     name: 'End Time',
     width: 100,
-    field: 'endTime',
+    cell: (value, index, { endTime }) => {
+      if (endTime === '1/1/1970, 8:00:00 AM') {
+        return <span>-</span>;
+      } else {
+        const date = DateTime.fromFormat(endTime, 'M/d/yyyy, h:m:s a');
+        return <span>{date.toRelative()}</span>;
+      }
+    },
   },
   {
     name: 'Model',
@@ -137,6 +170,39 @@ export const JOB_MAP = [
       };
       return <Button size="small" disabled={record.status !== 'SUCCESS'} onClick={download}>Download</Button>;
     },
+  },
+];
+
+export const PIPELINE_TEMPLATES = [
+  {
+    title: 'Image Classification',
+    category: 'vision',
+    description: 'The image classification accepts the given input images and produces output for identifying whether the type is or not.',
+    template: ImageClassificationPipeline,
+  },
+  {
+    title: 'Object Detection',
+    category: 'vision',
+    description: 'The object detection detects the given objects and returns class and position for each one.',
+    template: ObjectDetectionPipeline,
+  },
+  {
+    title: 'Image Style Transfer',
+    category: 'vision',
+    description: 'The image style transfer generates an image automatically.',
+    template: ImageStyleTransferPipeline,
+  },
+  {
+    title: 'Text Classification',
+    category: 'nlp',
+    description: 'The text classification does classify the text to specific classes.',
+    template: TextClassificationPipeline,
+  },
+  {
+    title: 'Text Creation',
+    category: 'nlp',
+    description: 'The text creation generates an artwork by a given portfolio.',
+    template: TextCreationPipeline,
   },
 ];
 
@@ -154,8 +220,7 @@ const PLUGIN_LIST = {
     '@pipcook/plugins-pascalvoc-data-access',
   ],
   dataProcess: [
-    '@pipcook/plugins-tensorflow-image-classification-process',
-    '@pipcook/plugins-tfjs-image-classification-process',
+    '@pipcook/plugins-image-data-process',
   ],
   modelDefine: [
     '@pipcook/plugins-bayesian-model-define',

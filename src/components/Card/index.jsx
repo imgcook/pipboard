@@ -5,7 +5,7 @@ const onClickItem = (url) => {
   location.href = url;
 };
 
-export default function card({ items }) {
+export default function({ items }) {
   return (
       <div className="card-wrapper">
         {items.map((item) => {
