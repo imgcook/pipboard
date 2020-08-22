@@ -25,3 +25,5 @@ packages/cli/assets/server/**
 packages/daemon/.github/**
 .pipcook
 __pycache__
+
+.vercel

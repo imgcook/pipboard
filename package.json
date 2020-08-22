@@ -32,16 +32,17 @@
   "devDependencies": {
     "@ice/spec": "^0.1.1",
     "@types/jasmine": "^3.5.7",
+    "@vercel/node": "^1.7.4",
     "eslint": "^7.7.0",
     "ice-plugin-fusion": "^0.1.4",
     "ice-plugin-moment-locales": "^0.1.0",
     "ice-scripts": "^2.0.0",
     "nyc": "14.1.1",
-    "stylelint": "^10.1.0"
+    "stylelint": "^10.1.0",
+    "vercel": "^19.2.0"
   },
   "scripts": {
     "start": "ice-scripts dev",
-    "dev": " DEV=TRUE ice-scripts dev",
     "compile": "ice-scripts build",
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint --cache --ext .js,.jsx ./",
@@ -49,7 +50,7 @@
     "clean": "rm -rf ./build"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": "13.x"
   },
   "iceworks": {
     "type": "react",

@@ -15,12 +15,6 @@ const config = {
     '@': path.resolve(__dirname, './src/'),
     '@pipcook/pipcook-core': path.resolve(__dirname, 'node_modules/@pipcook/pipcook-core/dist'),
   },
-  proxy: {
-    '/**': {
-      enable: true,
-      target: 'http://127.0.0.1:6927/api',
-    },
-  },
   define: {
     CWD: JSON.stringify(path.join(__dirname, '..', '..')),
     DEV: process.env.DEV === 'TRUE' ? JSON.stringify('TRUE') : JSON.stringify('FALSE'),

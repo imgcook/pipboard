@@ -6,7 +6,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import { messageLoading, messageHide } from '../../../utils/message';
 import './index.scss';
-import'codemirror/lib/codemirror.css';
+import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/javascript/javascript';
 
@@ -99,8 +99,8 @@ export default class AssetsClassification extends Component {
 
   async componentDidMount() {
     messageLoading('loading model from assetsClassification...');
-    this.model = await tf.loadGraphModel('/playground/model/assetsClassification/model.json');
-    this.means = (await axios.get('/playground/model/assetsClassification/mean.json')).data;
+    this.model = await tf.loadGraphModel('/api/model?name=assetsClassification/model.json');
+    this.means = (await axios.get('/api/model?name=assetsClassification/mean.json')).data;
     messageHide();
   }
 
