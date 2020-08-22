@@ -12,6 +12,7 @@ import './index.scss';
 export default class PipelineDetail extends Component {
 
   pipcook = getPipcook()
+
   state = {
     loading: true,
     plugins: {},

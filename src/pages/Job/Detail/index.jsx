@@ -19,6 +19,7 @@ function formatJSON(str) {
 export default class JobDetailPage extends Component {
 
   pipcook = getPipcook()
+
   state = {
     plugins: {},
     choices: pluginList,

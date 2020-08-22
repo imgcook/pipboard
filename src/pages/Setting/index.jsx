@@ -76,7 +76,7 @@ class PluginSetting extends Component {
   async componentDidMount() {
     const pipcook = getPipcook();
     this.setState({
-      installedPlugins: await pipcook.plugin.list()
+      installedPlugins: await pipcook.plugin.list(),
     });
   }
 

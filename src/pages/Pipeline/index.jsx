@@ -3,8 +3,7 @@ import { Table, Pagination } from '@alifd/next';
 
 import { messageError } from '@/utils/message';
 import { getPipcook } from '@/utils/common';
-import { PIPELINE_MAP, JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
-import { get } from '@/utils/request';
+import { PIPELINE_MAP, PIPELINE_STATUS } from '@/utils/config';
 
 import './index.scss';
 
@@ -13,6 +12,7 @@ const PAGE_SIZE = 30; // number of records in one page
 export default class Pipeline extends Component {
 
   pipcook = getPipcook()
+
   state = {
     models: [],
     fields: PIPELINE_MAP, // pipeline or job,

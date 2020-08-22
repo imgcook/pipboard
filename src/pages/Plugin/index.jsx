@@ -9,6 +9,7 @@ import './index.scss';
 export default class PluginList extends Component {
 
   pipcook = getPipcook()
+
   localPlugins = []
 
   state = {

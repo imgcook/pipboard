@@ -4,7 +4,6 @@ import { Table, Pagination } from '@alifd/next';
 import { getPipcook } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
-import { get } from '@/utils/request';
 import './index.scss';
 
 const PAGE_SIZE = 30; // number of records in one page
@@ -12,6 +11,7 @@ const PAGE_SIZE = 30; // number of records in one page
 export default class JobPage extends Component {
 
   pipcook = getPipcook()
+
   state = {
     models: [],
     fields: JOB_MAP, // pipeline or job,
