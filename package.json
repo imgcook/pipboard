@@ -49,9 +49,6 @@
     "stylelint": "stylelint ./**/*.scss",
     "clean": "rm -rf ./build"
   },
-  "engines": {
-    "node": "13.x"
-  },
   "iceworks": {
     "type": "react",
     "adapter": "adapter-react-v3"
