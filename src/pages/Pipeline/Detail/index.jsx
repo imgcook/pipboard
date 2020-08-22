@@ -3,6 +3,7 @@ import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, Nu
 import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
+import { getPipcook } from '@/utils/common';
 import { messageError, messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import { get, put } from '@/utils/request';
@@ -10,6 +11,7 @@ import './index.scss';
 
 export default class PipelineDetail extends Component {
 
+  pipcook = getPipcook()
   state = {
     loading: true,
     plugins: {},
@@ -24,7 +26,7 @@ export default class PipelineDetail extends Component {
     const params = queryString.parse(location.hash.split('?')[1]);
     if (params && params.pipelineId) {
       const id = params.pipelineId;
-      const pipeline = await get(`/pipeline/info/${id}`);
+      const pipeline = await this.pipcook.pipeline.get(id);
       if (!pipeline) {
         messageError('timeout to request the pipeline and plugins.');
         this.setState({ loading: false });
@@ -47,7 +49,8 @@ export default class PipelineDetail extends Component {
   }
 
   fetchJobs = async (id) => {
-    const jobResp = await get(`/job/list?pipelineId=${id}`);
+    // TODO(yorkie): sdk dont support `job.listByPipelineId()`.
+    const jobResp = await get(`job/list?pipelineId=${id}`);
     let jobs = [];
     if (jobResp) {
       jobs = jobResp.rows;

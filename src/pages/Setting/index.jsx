@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
 import { Input, Tab, Tag, Form, Button } from '@alifd/next';
-import { get } from '@/utils/request';
+import { getPipcook } from '@/utils/common';
 import './index.scss';
 
 class OverviewSetting extends Component {
 
   state = {
-    versions: { daemon: null, pipboard: null },
-  }
-
-  async componentWillMount() {
-    const versions = await get('/versions');
-    this.setState({ versions });
+    versions: { daemon: '1.1.0' },
   }
 
   render () {
@@ -27,9 +22,6 @@ class OverviewSetting extends Component {
       <Form.Item label="Daemon" help="the pipcook daemon.">
         <Tag size="small">v{this.state.versions.daemon}</Tag>
       </Form.Item>
-      <Form.Item label="Pipboard" help="the pipboard version.">
-        <Tag size="small">v{this.state.versions.pipboard}</Tag>
-      </Form.Item>
     </Form>;
   }
 }
@@ -41,11 +33,6 @@ class DaemonSetting extends Component {
       pythonIndexMirror: '',
       pythonCondaMirror: '',
     },
-  }
-
-  async componentWillMount () {
-    const config = await get('/config');
-    this.setState({ config });
   }
 
   createConfigSetter = (name) => {
@@ -83,7 +70,14 @@ class DaemonSetting extends Component {
 
 class PluginSetting extends Component {
   state = {
-    // TODO
+    installedPlugins: 0,
+  }
+
+  async componentDidMount() {
+    const pipcook = getPipcook();
+    this.setState({
+      installedPlugins: await pipcook.plugin.list()
+    });
   }
 
   render () {
@@ -97,7 +91,7 @@ class PluginSetting extends Component {
     };
     return <Form {...formItemLayout}>
       <Form.Item label="Installed plugins">
-        <p>10 plugins are installed</p>
+        <p>{this.state.installedPlugins.length} plugins are installed</p>
       </Form.Item>
       <Form.Item label="Operations" help="This removes all installed plugins.">
         <Button warning>Remove All Plugins</Button>

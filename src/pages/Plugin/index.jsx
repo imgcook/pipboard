@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Box, Button, Dialog, List, Icon, Input, Select, Tag, Divider } from '@alifd/next';
+import { getPipcook } from '@/utils/common';
 import { PLUGINS } from '@pipcook/pipcook-core/constants/plugins';
 import { DateTime } from 'luxon';
 import { get } from '@/utils/request';
@@ -7,6 +8,7 @@ import './index.scss';
 
 export default class PluginList extends Component {
 
+  pipcook = getPipcook()
   localPlugins = []
 
   state = {
@@ -28,7 +30,7 @@ export default class PluginList extends Component {
 
   fetch = async () => {
     this.setState({ loading: true });
-    this.localPlugins = await get('/plugin/list');
+    this.localPlugins = await this.pipcook.plugin.list();
     this.setState({
       plugins: Object.assign([], this.localPlugins),
       loading: false,

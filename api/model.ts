@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const RES_CDN_PREFIX = 'http://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase';
 
-
 export default async function (req: NowRequest, res: NowResponse) {
   const { name } = req.query;
   if (!name) {

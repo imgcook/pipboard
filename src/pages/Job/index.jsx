@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Pagination } from '@alifd/next';
 
+import { getPipcook } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
 import { get } from '@/utils/request';
@@ -10,6 +11,7 @@ const PAGE_SIZE = 30; // number of records in one page
 
 export default class JobPage extends Component {
 
+  pipcook = getPipcook()
   state = {
     models: [],
     fields: JOB_MAP, // pipeline or job,
@@ -24,13 +26,12 @@ export default class JobPage extends Component {
   fetchData = async (currentPage) => {
     // check if show job or pipeline from url
     try {
-      const response = await get('/job/list', {
-        params: {
-          offset: (currentPage - 1) * PAGE_SIZE, 
-          limit: PAGE_SIZE,
-        },
+      const jobs = await this.pipcook.job.list({
+        // TODO: not support.
+        // offset: (currentPage - 1) * PAGE_SIZE, 
+        // limit: PAGE_SIZE,
       });
-      const result = response.rows.map((item) => {
+      const result = jobs.map((item) => {
         return {
           ...item,
           createdAt: new Date(item.createdAt).toLocaleString(),
@@ -40,7 +41,7 @@ export default class JobPage extends Component {
       });
       this.setState({
         models: result,
-        totalCount: response.count,
+        totalCount: jobs.length,
         currentPage,
       });
     } catch (err) {

@@ -3,6 +3,7 @@ import { Button, Timeline, Select, Divider, Tab, Icon, Affix } from '@alifd/next
 import queryString from 'query-string';
 import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
 
+import { getPipcook } from '@/utils/common';
 import { messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList } from '@/utils/config';
 import { get } from '@/utils/request';
@@ -17,6 +18,7 @@ function formatJSON(str) {
 
 export default class JobDetailPage extends Component {
 
+  pipcook = getPipcook()
   state = {
     plugins: {},
     choices: pluginList,
@@ -34,8 +36,9 @@ export default class JobDetailPage extends Component {
 
   async componentWillMount() {
     const { jobId } = queryString.parse(location.hash.split('?')[1]);
-    const job = await get(`/job/${jobId}`);
-    const pipeline = await get(`/pipeline/info/${job.pipelineId}`);
+    const job = await this.pipcook.job.get(jobId);
+    const pipeline = await this.pipcook.pipeline.get(job.pipelineId);
+    console.log(job, pipeline);
 
     this.setState({
       plugins: pipeline.plugins,

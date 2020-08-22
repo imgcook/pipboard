@@ -1,6 +1,6 @@
-
 import React, { Component } from 'react';
 import { Nav, Icon, Button, Badge, Dialog, Divider } from '@alifd/next';
+import { PipcookClient } from '@pipcook/sdk';
 import NewPipelineBox from '@/components/NewPipelineBox';
 import './index.scss';
 

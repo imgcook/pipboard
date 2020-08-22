@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, Pagination } from '@alifd/next';
 
 import { messageError } from '@/utils/message';
+import { getPipcook } from '@/utils/common';
 import { PIPELINE_MAP, JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
 import { get } from '@/utils/request';
 
@@ -11,6 +12,7 @@ const PAGE_SIZE = 30; // number of records in one page
 
 export default class Pipeline extends Component {
 
+  pipcook = getPipcook()
   state = {
     models: [],
     fields: PIPELINE_MAP, // pipeline or job,
@@ -23,23 +25,13 @@ export default class Pipeline extends Component {
   }
 
   fetchData = async (currentPage) => {
-    // check if show job or pipeline from url
-    let queryUrl = '/pipeline/list';
-    if (location.href.includes('jobs')) {
-      this.setState({
-        fields: JOB_MAP,
-      });
-      queryUrl = '/job/list';
-    }
-    
     try {
-      const response = await get(queryUrl, {
-        params: {
-          offset: (currentPage - 1) * PAGE_SIZE, 
-          limit: PAGE_SIZE,
-        },
+      const response = await this.pipcook.pipeline.list({
+        // TODO(yorkie): @pipcook/sdk dont support the followings.
+        // offset: (currentPage - 1) * PAGE_SIZE,
+        // limit: PAGE_SIZE,
       });
-      const result = response.rows.map((item) => {
+      const result = response.map((item) => {
         return {
           ...item,
           createdAt: new Date(item.createdAt).toLocaleString(),
@@ -49,7 +41,7 @@ export default class Pipeline extends Component {
       });
       this.setState({
         models: result,
-        totalCount: response.count,
+        totalCount: response.length,
         currentPage,
       });
     } catch (err) {
