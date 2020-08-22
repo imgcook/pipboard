@@ -9,5 +9,5 @@ export function getPipcook() {
   if (!pipcookClient) {
     pipcookClient = new PipcookClient();
   }
-  return __pipcookClient;
+  return pipcookClient;
 }
