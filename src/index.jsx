@@ -7,4 +7,6 @@ if (!ICE_CONTAINER) {
   throw new Error('当前页面不存在 <div id="ice-container"></div> 节点.');
 }
 
-ReactDOM.render(router(), ICE_CONTAINER);
+(async () => {
+  ReactDOM.render(await router(), ICE_CONTAINER);
+})();

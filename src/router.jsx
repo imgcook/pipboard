@@ -5,22 +5,22 @@ import json from '@/config/routes.json';
 import PageLoading from '@/components/PageLoading';
 import BasicLayout from '@/layouts/BasicLayout';
 
-const createRoutes = (list) => {
-  return Object.keys(list).map(routeSetter.bind(null, list));
+async function createRoutes(list) {
+  return Promise.all(Object.keys(list).map(routeSetter.bind(null, list)));
 };
 
-const routeSetter = (list, route) => {
+async function routeSetter(list, route) {
   const handler = list[route];
   if (typeof handler === 'string') {
-    const m = require(`@/pages/${handler}`);
+    const m = await import(`@/pages/${handler}`);
     return {
-      path: route, component: m?.default ? m.default : m
+      path: route, component: m?.default ? m.default : m,
     };
   } else if (typeof handler === 'object') {
     return {
       path: route,
       component: BasicLayout,
-      children: createRoutes(handler)
+      children: await createRoutes(handler),
     };
   }
 }
@@ -46,8 +46,8 @@ const RouteItem = (props) => {
   );
 };
 
-const router = () => {
-  const routes = createRoutes(json);
+const router = async () => {
+  const routes = await createRoutes(json);
   return (
     <Router>
       <Switch>
