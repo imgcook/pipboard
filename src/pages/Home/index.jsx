@@ -14,7 +14,6 @@ const items = [{
   url: '/index.html#/pipeline',
 }];
 
-
 export default function() {
   return (
     <div className="home">

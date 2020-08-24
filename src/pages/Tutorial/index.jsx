@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from '@/components/Card';
-
 import './index.scss';
 
 const items = [{
@@ -9,12 +8,11 @@ const items = [{
   description: 'We have trained a neural network to recognize handwritten digits. You can have a try to give your own handwritten digit',
   url: '/index.html#/tutorial/mnist',
 }, {
-  title: 'Image Classification for Front-end Assets',
+  title: 'Image Classification for Web Assets',
   cover: 'https://gw.alicdn.com/tfs/TB1yujRgUY1gK0jSZFMXXaWcVXa-524-410.png',
-  description: 'Use CNN trained by Pipcook to try understand the meaning of image assets used in Taobao App',
+  description: 'Use CNN trained by Pipcook to try understand the meaning of image assets',
   url: '/index.html#/tutorial/assets-classification',
 }];
-
 
 export default function() {
   return (
@@ -23,5 +21,3 @@ export default function() {
     </div>
   );
 }
-
-
