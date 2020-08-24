@@ -1,8 +1,29 @@
 import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import React, { Suspense } from 'react';
 import path from 'path';
-import routes from '@/config/routes';
+import json from '@/config/routes.json';
 import PageLoading from '@/components/PageLoading';
+import BasicLayout from '@/layouts/BasicLayout';
+
+const createRoutes = (list) => {
+  return Object.keys(list).map(routeSetter.bind(null, list));
+};
+
+const routeSetter = (list, route) => {
+  const handler = list[route];
+  if (typeof handler === 'string') {
+    const m = require(`@/pages/${handler}`);
+    return {
+      path: route, component: m?.default ? m.default : m
+    };
+  } else if (typeof handler === 'object') {
+    return {
+      path: route,
+      component: BasicLayout,
+      children: createRoutes(handler)
+    };
+  }
+}
 
 const RouteItem = (props) => {
   const { redirect, path: routePath, component, key } = props;
@@ -26,6 +47,7 @@ const RouteItem = (props) => {
 };
 
 const router = () => {
+  const routes = createRoutes(json);
   return (
     <Router>
       <Switch>
