@@ -13,7 +13,6 @@ async function routeSetter(list, route) {
   const handler = list[route];
   if (typeof handler === 'string') {
     const m = await import(`@/pages/${handler}`);
-    console.log(handler, m);
     return {
       path: route, component: m?.default ? m.default : m,
     };
@@ -27,17 +26,7 @@ async function routeSetter(list, route) {
 }
 
 const RouteItem = (props) => {
-  const { redirect, path: routePath, component, key } = props;
-  if (redirect) {
-    return (
-      <Redirect
-        exact
-        key={key}
-        from={routePath}
-        to={redirect}
-      />
-    );
-  }
+  const { path: routePath, component, key } = props;
   return (
     <Route
       key={key}
@@ -49,6 +38,7 @@ const RouteItem = (props) => {
 
 const router = async () => {
   const routes = await createRoutes(json);
+  console.log(routes);
   return (
     <Router>
       <Switch>
@@ -65,10 +55,9 @@ const router = async () => {
                       <Suspense fallback={<PageLoading />}>
                         <Switch>
                           {children.map((routeChild, idx) => {
-                            const { redirect, path: childPath, component } = routeChild;
+                            const { path: childPath, component } = routeChild;
                             return RouteItem({
                               key: `${id}-${idx}`,
-                              redirect,
                               path: childPath && path.join(route.path, childPath),
                               component,
                             });

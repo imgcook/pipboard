@@ -1,6 +1,6 @@
 {
   "/tutorial": {
-    "/minist": "Tutorial/Mnist",
+    "/mnist": "Tutorial/Mnist",
     "/assets-classification": "Tutorial/AssetsClassification",
     "/": "Tutorial"
   },
