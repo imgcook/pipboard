@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Pagination } from '@alifd/next';
 
-import { getPipcook } from '@/utils/common';
+import { getPipcook, redirect } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
 import './index.scss';
@@ -46,7 +46,7 @@ export default class JobPage extends Component {
       });
     } catch (err) {
       if (err.message === 'Network Error') {
-        location.href = '#/connect';
+        redirect('/connect');
       } else {
         messageError(err.message);
       }

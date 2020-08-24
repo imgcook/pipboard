@@ -1,4 +1,4 @@
-import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import React, { Suspense } from 'react';
 import path from 'path';
 import json from '@/config/routes.json';

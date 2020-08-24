@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Box, Card } from '@alifd/next';
 import { PIPELINE_TEMPLATES } from '@/utils/config';
+import { redirect } from '@/utils/common';
 import { post } from '@/utils/request';
 import './index.scss';
 
@@ -15,7 +16,7 @@ export default class NewPipelineBox extends Component {
       config: JSON.stringify(template),
       isFile: false,
     });
-    location.href = `/index.html#/pipeline/info?pipelineId=${  pipelineRes.id}`;
+    redirect(`/pipeline/info?pipelineId=${pipelineRes.id}`);
   }
 
   render() {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from '@alifd/next';
-import { getPipcook } from '@/utils/common';
+import { getPipcook, redirect } from '@/utils/common';
 import './index.scss';
 
 export default class Connect extends Component {
@@ -13,7 +13,7 @@ export default class Connect extends Component {
     try {
       await this.pipcook.pipeline.list({ offset: 0, limit: 1 });
       // TODO: redirect to history.back()?
-      location.href = '#/pipeline';
+      redirect('/pipeline');
     } catch (err) {
       // just catch the error.
     }

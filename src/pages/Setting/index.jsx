@@ -55,6 +55,9 @@ class DaemonSetting extends Component {
       },
     };
     return <Form {...formItemLayout}>
+      <Form.Item label="Remote" help="The remote url prefix to Daemon">
+        <Input value="http://localhost:6927" disabled />
+      </Form.Item>
       <Form.Item label="NPM Registry" help="The NPM registry prefix to install all plugin.">
         <Input value={this.state.config.npmRegistryPrefix} onChange={this.createConfigSetter('npmRegistryPrefix')} />
       </Form.Item>

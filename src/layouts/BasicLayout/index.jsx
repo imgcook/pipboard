@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Nav, Icon, Button, Badge, Dialog, Divider } from '@alifd/next';
 import NewPipelineBox from '@/components/NewPipelineBox';
+import { redirect } from '@/utils/common';
 import './index.scss';
 
 export default class Dashboard extends Component {
@@ -14,7 +15,7 @@ export default class Dashboard extends Component {
   footer = (
     <div className="footer">
       <span className="footer-left">
-        <Button text onClick={() => location.href = '#/setting'}>
+        <Button text onClick={() => redirect('/setting')}>
           <Badge>
             <Icon type="set" />
           </Badge>
@@ -27,7 +28,7 @@ export default class Dashboard extends Component {
       </span>
       <Divider direction="ver" />
       <Button text className="add-pipeline-btn" onClick={() => this.setState({ newPipelineDialogVisible: true })}>
-        <Icon type="add" size="xs" />New Pipeline
+        <Icon type="add" />New Pipeline
       </Button>
     </div>
   )
