@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
 import { Icon } from '@alifd/next';
+import { getPipcook } from '@/utils/common';
 import './index.scss';
 
 export default class Connect extends Component {
-  state = {
-    // TODO
+  
+  pipcook = getPipcook()
+
+  state = {}
+
+  async componentWillMount() {
+    try {
+      await this.pipcook.pipeline.list({ offset: 0, limit: 1 });
+      // TODO: redirect to history.back()?
+      location.href = '#/pipeline';
+    } catch (err) {
+      // just catch the error.
+    }
   }
 
   render() {
