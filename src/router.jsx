@@ -13,6 +13,7 @@ async function routeSetter(list, route) {
   const handler = list[route];
   if (typeof handler === 'string') {
     const m = await import(`@/pages/${handler}`);
+    console.log(handler, m);
     return {
       path: route, component: m?.default ? m.default : m,
     };

@@ -45,7 +45,11 @@ export default class JobPage extends Component {
         currentPage,
       });
     } catch (err) {
-      messageError(err.message);
+      if (err.message === 'Network Error') {
+        location.href = '#/connect';
+      } else {
+        messageError(err.message);
+      }
     }
   }
 

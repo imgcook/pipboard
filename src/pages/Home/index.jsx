@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from '@/components/Card';
-
 import './index.scss';
 
 const items = [{
@@ -19,9 +18,7 @@ const items = [{
 export default function() {
   return (
     <div className="home">
-        <Card items = {items} />
+      <Card items = {items} />
     </div>
   );  
 }
-
-
