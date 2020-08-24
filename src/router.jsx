@@ -38,7 +38,6 @@ const RouteItem = (props) => {
 
 const router = async () => {
   const routes = await createRoutes(json);
-  console.log(routes);
   return (
     <Router>
       <Switch>
