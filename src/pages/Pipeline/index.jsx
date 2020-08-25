@@ -18,6 +18,7 @@ export default class Pipeline extends Component {
     fields: PIPELINE_MAP, // pipeline or job,
     currentPage: 1,
     totalCount: 0,
+    renderable: false
   }
 
   changePage = async (value) => {
@@ -27,9 +28,8 @@ export default class Pipeline extends Component {
   fetchData = async (currentPage) => {
     try {
       const response = await this.pipcook.pipeline.list({
-        // TODO(yorkie): @pipcook/sdk dont support the followings.
-        // offset: (currentPage - 1) * PAGE_SIZE,
-        // limit: PAGE_SIZE,
+        offset: (currentPage - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
       });
       const result = response.map((item) => {
         return {
@@ -43,22 +43,28 @@ export default class Pipeline extends Component {
         models: result,
         totalCount: response.length,
         currentPage,
+        renderable: true,
       });
     } catch (err) {
       if (err.message === 'Network Error') {
+        this.setState({ renderable: false });
         redirect('/connect');
       } else {
+        this.setState({ renderable: true });
         messageError(err.message);
       }
     }
   }
 
-  componentDidMount = async () => {
+  componentWillMount = async () => {
     await this.fetchData(1);
   }
 
   render() {
-    const { models, fields, currentPage, totalCount } = this.state;
+    const { models, fields, currentPage, totalCount, renderable } = this.state;
+    if (!renderable) {
+      return <div />;
+    }
     return (
       <div className="pipeline">
         <Table dataSource={models}
