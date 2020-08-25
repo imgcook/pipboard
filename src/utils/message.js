@@ -1,32 +1,31 @@
 import { Message } from '@alifd/next';
 
-
 export function messageSuccess (message) {
   Message.success(message);
 }
 
-export function messageError (error) {
+export function messageError (message, title = 'error') {
   Message.show({
     type: 'error',
-    title: 'error',
-    content: error,
-    hasMask: true,
-  });
-}
-
-export function messageWarning (message) {
-  Message.show({
-    type: 'warning',
-    title: 'warning',
+    title,
     content: message,
     hasMask: true,
   });
 }
 
-export function messageLoading (message) {
+export function messageWarning (message, title = 'warning') {
+  Message.show({
+    type: 'warning',
+    title,
+    content: message,
+    hasMask: true,
+  });
+}
+
+export function messageLoading (message, title = 'loading') {
   Message.show({
     type: 'loading',
-    title: 'loading',
+    title,
     content: message,
     hasMask: true,
     duration: 0,

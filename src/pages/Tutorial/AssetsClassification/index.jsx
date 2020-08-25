@@ -4,7 +4,7 @@ import { UnControlled as CodeMirror } from 'react-codemirror2';
 import * as Jimp from 'jimp';
 import * as tf from '@tensorflow/tfjs';
 
-import { messageLoading, messageHide } from '../../../utils/message';
+import { messageLoading, messageHide } from '@/utils/message';
 import './index.scss';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';

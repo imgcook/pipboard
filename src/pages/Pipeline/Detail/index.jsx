@@ -4,7 +4,7 @@ import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
 import { getPipcook, redirect } from '@/utils/common';
-import { messageError, messageSuccess } from '@/utils/message';
+import { messageError, messageSuccess, messageLoading } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import './index.scss';
 
@@ -85,6 +85,11 @@ export default class PipelineDetail extends Component {
     const { pipelineId } = this.state;
     await this.savePipeline(false);
 
+    messageLoading('installing plugins', 'installing');
+    const resp = await this.pipcook.pipeline.install(pipelineId);
+    await this.pipcook.pipeline.traceEvent(resp.traceId, (event, data) => {});
+
+    messageHide();
     const job = await this.pipcook.job.run(pipelineId);
     redirect(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
   }
