@@ -18,7 +18,7 @@ export default class Pipeline extends Component {
     fields: PIPELINE_MAP, // pipeline or job,
     currentPage: 1,
     totalCount: 0,
-    renderable: false
+    renderable: false,
   }
 
   changePage = async (value) => {
