@@ -25,7 +25,7 @@ export default class JobDetailPage extends Component {
     choices: pluginList,
     pipelineId: null,
     jobId: null,
-    traceId: null,
+    // traceId: null,
     job: {
       stdout: '',
       stderr: '',

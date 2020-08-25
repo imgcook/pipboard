@@ -6,7 +6,6 @@ import queryString from 'query-string';
 import { getPipcook, redirect } from '@/utils/common';
 import { messageError, messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
-import { get, put } from '@/utils/request';
 import './index.scss';
 
 export default class PipelineDetail extends Component {
