@@ -10,7 +10,7 @@
     "@icedesign/notification": "^1.0.5",
     "@icedesign/theme": "^1.0.0",
     "@pipcook/pipcook-core": "^1.1.2",
-    "@pipcook/sdk": "^1.1.2",
+    "@pipcook/sdk": "beta",
     "@tensorflow/tfjs": "1.7.0",
     "axios": "^0.18.1",
     "classnames": "^2.2.5",

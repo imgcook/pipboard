@@ -5,8 +5,15 @@ import './index.scss';
 
 class OverviewSetting extends Component {
 
+  pipcook = getPipcook()
+
   state = {
-    versions: { daemon: '1.1.0' },
+    versions: { daemon: null },
+  }
+
+  async componentDidMount() {
+    const resp = await this.pipcook.listVersions();
+    this.setState({ versions: resp.versions });
   }
 
   render () {
@@ -27,12 +34,20 @@ class OverviewSetting extends Component {
 }
 
 class DaemonSetting extends Component {
+
+  pipcook = getPipcook()
+
   state = {
     config: {
       npmRegistryPrefix: '',
       pythonIndexMirror: '',
       pythonCondaMirror: '',
     },
+  }
+
+  async componentDidMount() {
+    const resp = await this.pipcook.getConfig();
+    this.setState({ config: resp });
   }
 
   createConfigSetter = (name) => {
@@ -56,7 +71,7 @@ class DaemonSetting extends Component {
     };
     return <Form {...formItemLayout}>
       <Form.Item label="Remote" help="The remote url prefix to Daemon">
-        <Input value="http://localhost:6927" disabled />
+        <Input value="http://localhost:6927" />
       </Form.Item>
       <Form.Item label="NPM Registry" help="The NPM registry prefix to install all plugin.">
         <Input value={this.state.config.npmRegistryPrefix} onChange={this.createConfigSetter('npmRegistryPrefix')} />
