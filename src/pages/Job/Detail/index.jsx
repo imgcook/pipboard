@@ -122,7 +122,7 @@ export default class JobDetailPage extends Component {
     };
     const renderLogView = (logs) => {
       return <pre className="job-logview">
-        {logs}
+        {logs.replace(/\r/g, '\n')}
         {job?.status === 1 && <Icon type="loading" />}
       </pre>;
     };
