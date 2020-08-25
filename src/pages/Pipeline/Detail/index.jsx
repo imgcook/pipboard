@@ -3,7 +3,7 @@ import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, Nu
 import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
-import { getPipcook } from '@/utils/common';
+import { getPipcook, redirect } from '@/utils/common';
 import { messageError, messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import { get, put } from '@/utils/request';
@@ -50,12 +50,7 @@ export default class PipelineDetail extends Component {
   }
 
   fetchJobs = async (id) => {
-    // TODO(yorkie): sdk dont support `job.listByPipelineId()`.
-    const jobResp = await get(`job/list?pipelineId=${id}`);
-    let jobs = [];
-    if (jobResp) {
-      jobs = jobResp.rows;
-    }
+    const jobs = await this.pipcook.job.list({ pipelineId: id });
     this.setState({ jobs });
   }
 
@@ -100,7 +95,7 @@ export default class PipelineDetail extends Component {
         cwd: CWD,
       },
     });
-    location.href = `#/job/info?jobId=${job.id}`;
+    redirect(`/job/info?jobId=${job.id}`);
   }
 
   deletePipeline = async () => {
