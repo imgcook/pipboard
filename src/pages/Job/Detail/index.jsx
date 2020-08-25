@@ -25,7 +25,6 @@ export default class JobDetailPage extends Component {
     choices: pluginList,
     pipelineId: null,
     jobId: null,
-    traceId: null,
     job: {
       stdout: '',
       stderr: '',
@@ -46,7 +45,6 @@ export default class JobDetailPage extends Component {
       pipelineId: job.pipelineId,
       jobId,
     });
-    this.updateJobState();
 
     if (traceId && job.status < 2) {
       this.listenJobState(traceId);
@@ -77,9 +75,9 @@ export default class JobDetailPage extends Component {
   }
 
   listenJobState = async (id) => {
-    const newJob = this.state.job;
     try {
       await this.pipcook.job.traceEvent(id, (event, msg) => {
+        const newJob = this.state.job;
         if (event === 'log') {
           if (msg.level === 'info') {
             newJob.stdout += `${msg.data}\n`;
@@ -89,9 +87,12 @@ export default class JobDetailPage extends Component {
         }
       });
     } catch (err) {
-      newJob.stderr += `${err.stack}\n`;
+      this.setState((prevState) => {
+        const job = prevState.job;
+        job.stderr += `${err.stack}\n`;
+        return { job };
+      });
     }
-    this.setState({ job: newJob });
   }
 
   changeSelectPlugin = (itemName, value) => {
