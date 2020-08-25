@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
 import { Button, Box, Card } from '@alifd/next';
 import { PIPELINE_TEMPLATES } from '@/utils/config';
-import { redirect } from '@/utils/common';
-import { post } from '@/utils/request';
+import { getPipcook, redirect } from '@/utils/common';
 import './index.scss';
 
 export default class NewPipelineBox extends Component {
+
+  pipcook = getPipcook()
+
   state = {
     selected: null,
   }
 
   async create() {
     const { template } = PIPELINE_TEMPLATES[this.state.selected];
-    const pipelineRes = await post('/pipeline', {
-      config: JSON.stringify(template),
-      isFile: false,
-    });
-    redirect(`/pipeline/info?pipelineId=${pipelineRes.id}`);
+    const pipeline = await this.pipcook.pipeline.create(template);
+    redirect(`/pipeline/info?pipelineId=${pipeline.id}`);
   }
 
   render() {
