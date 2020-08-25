@@ -7,7 +7,9 @@ export default class Connect extends Component {
   
   pipcook = getPipcook()
 
-  state = {}
+  state = {
+    disconnected: false,
+  }
 
   async componentWillMount() {
     try {
@@ -16,10 +18,14 @@ export default class Connect extends Component {
       redirect('/pipeline');
     } catch (err) {
       // just catch the error.
+      this.setState({ disconnected: true });
     }
   }
 
   render() {
+    if (!this.state.disconnected) {
+      return <div />;
+    }
     const guide = [
       '$ npm install -g @pipcook/pipcook-cli',
       '$ pipcook init',
