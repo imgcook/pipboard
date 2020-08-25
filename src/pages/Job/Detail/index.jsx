@@ -25,6 +25,7 @@ export default class JobDetailPage extends Component {
     choices: pluginList,
     pipelineId: null,
     jobId: null,
+    traceId: null,
     job: {
       stdout: '',
       stderr: '',
@@ -39,7 +40,6 @@ export default class JobDetailPage extends Component {
     const { jobId } = queryString.parse(location.hash.split('?')[1]);
     const job = await this.pipcook.job.get(jobId);
     const pipeline = await this.pipcook.pipeline.get(job.pipelineId);
-    console.log(job, pipeline);
 
     this.setState({
       plugins: pipeline.plugins,
@@ -51,15 +51,15 @@ export default class JobDetailPage extends Component {
 
   updateJobState = async () => {
     const { jobId } = this.state;
-    const job = await get(`/job/${jobId}`);
-    const logs = await get(`/job/${jobId}/log`);
+    const job = await this.pipcook.job.get(jobId);
+    const logs = await this.pipcook.job.log(jobId);
     if (!logs) {
       return;
     }
     this.setState({
       job: {
-        stdout: logs?.log[0],
-        stderr: logs?.log[1],
+        stdout: logs[0],
+        stderr: logs[1],
         evaluate: {
           pass: job.evaluatePass,
           maps: formatJSON(job.evaluateMap),
@@ -83,7 +83,7 @@ export default class JobDetailPage extends Component {
         params: {},
       };
     }
-    this.setState({plugins});
+    this.setState({ plugins });
   }
 
   updateParams = (event, selectType) => {
@@ -140,9 +140,9 @@ export default class JobDetailPage extends Component {
                   PLUGINS.filter(({ id }) => {
                     return choices[id] && plugins[id];
                   }).map(({ id, title }) => {
-                    const plugin = plugins[id].plugin;
-                    const selectNode = <Select className="plugin-choose-selector" value={plugin.name} disabled>
-                      <Select.Option key={plugin.name} value={plugin.name}>{plugin.name}</Select.Option>
+                    const name = plugins[id]?.name;
+                    const selectNode = <Select className="plugin-choose-selector" value={name} disabled>
+                      <Select.Option key={name} value={name}>{name}</Select.Option>
                     </Select>;
                     return renderTimelineItem(title, {
                       key: id,

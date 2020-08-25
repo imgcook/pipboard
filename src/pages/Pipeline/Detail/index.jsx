@@ -23,9 +23,8 @@ export default class PipelineDetail extends Component {
   }
 
   async componentDidMount() {
-    // get pipeline if and job id from url.
     const params = queryString.parse(location.hash.split('?')[1]);
-    if (params && params.pipelineId) {
+    if (params?.pipelineId) {
       const id = params.pipelineId;
       const pipeline = await this.pipcook.pipeline.get(id);
       if (!pipeline) {
@@ -33,11 +32,9 @@ export default class PipelineDetail extends Component {
         this.setState({ loading: false });
         return;
       }
-
       Object.keys(pipeline.plugins).forEach(
         key => pipeline.plugins[key].package = pipeline.plugins[key].name,
       );
-
       this.setState({
         loading: false,
         plugins: pipeline.plugins,
@@ -75,31 +72,27 @@ export default class PipelineDetail extends Component {
 
   savePipeline = async (showMessage = true) => {
     const { plugins, pipelineId } = this.state;
-    await put(`/pipeline/${pipelineId}`, {
-      config: JSON.stringify({
-        plugins,
-      }),
-      isFile: false,
-    });
-    if (showMessage) {
-      messageSuccess('Update Pipeline Successfully');
+    try {
+      await this.pipcook.pipeline.update(pipelineId, { plugins });
+      if (showMessage) {
+        messageSuccess('Update Pipeline Successfully');
+      }
+    } catch (err) {
+      messageError('Update Pipeline failed');
     }
   }
 
   startJob = async () => {
     const { pipelineId } = this.state;
     await this.savePipeline(false);
-    const job = await get('/job/run', {
-      params: {
-        pipelineId,
-        cwd: CWD,
-      },
-    });
-    redirect(`/job/info?jobId=${job.id}`);
+
+    const job = await this.pipcook.job.run(pipelineId);
+    redirect(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
   }
 
   deletePipeline = async () => {
     // TODO
+    messageError('not supported');
   }
 
   setVisible = () => {
@@ -194,7 +187,6 @@ export default class PipelineDetail extends Component {
                 }
                 input = <Grid.Row gutter={arrayMatch[2]}>{cols}</Grid.Row>;
               } else if (arrayMatch[1] === 'string') {
-                console.log(defaultValue);
                 const selectOpts = {
                   hasClear: true,
                   mode: 'multiple',
@@ -264,7 +256,7 @@ export default class PipelineDetail extends Component {
                 onClick={this.savePipeline}>Save</Button>
               <Button size="medium" type="secondary"
                 onClick={this.startJob}>Start</Button>
-              <Button size="medium" warning
+              <Button size="medium" warning disabled
                 onClick={this.deletePipeline}>Delete</Button>
             </div>
           </div>
