@@ -3,7 +3,8 @@ import { Table, Pagination } from '@alifd/next';
 
 import { getPipcook, redirect } from '@/utils/common';
 import { messageError } from '@/utils/message';
-import { JOB_MAP, PIPELINE_STATUS } from '@/utils/config';
+import { JOB_MAP } from '@/utils/config';
+import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
 import './index.scss';
 
 const PAGE_SIZE = 30; // number of records in one page
@@ -35,7 +36,7 @@ export default class JobPage extends Component {
           ...item,
           createdAt: new Date(item.createdAt).toLocaleString(),
           endTime: new Date(item.endTime).toLocaleString(),
-          status: PIPELINE_STATUS[item.status],
+          status: PipelineStatus[item.status],
         };
       });
       this.setState({
