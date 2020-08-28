@@ -3,7 +3,7 @@ import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, Nu
 import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook, redirect, createPluginsFromPipeline } from '@/utils/common';
 import { messageError, messageSuccess, messageLoading, messageHide } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import './index.scss';
@@ -13,12 +13,34 @@ export default class PipelineDetail extends Component {
   pipcook = getPipcook()
 
   state = {
+    /**
+     * loading state.
+     */
     loading: true,
+    /**
+     * plugins for current pipeline.
+     */
     plugins: {},
-    choices: pluginList,
+    /**
+     * jobs on the pipeline.
+     */
     jobs: [],
-    currentSelect: 'dataCollect',
+    /**
+     * available choices for plugins.
+     */
+    choices: pluginList,
+    /**
+     * pipelineId
+     */
     pipelineId: null,
+    /**
+     * the plugin category by selected.
+     */
+    currentSelect: 'dataCollect',
+    /**
+     * the current plugin metadata.
+     */
+    currentPlugin: null,
   }
 
   async componentDidMount() {
@@ -31,16 +53,14 @@ export default class PipelineDetail extends Component {
         this.setState({ loading: false });
         return;
       }
-      Object.keys(pipeline.plugins).forEach(
-        key => pipeline.plugins[key].package = pipeline.plugins[key].name,
-      );
       this.setState({
         loading: false,
-        plugins: pipeline.plugins,
+        plugins: createPluginsFromPipeline(pipeline),
         pipelineId: params.pipelineId,
       });
 
       // fetch the jobs data in async.
+      this.selectPlugin();
       this.fetchJobs(id);
     }
   }
@@ -48,6 +68,13 @@ export default class PipelineDetail extends Component {
   fetchJobs = async (id) => {
     const jobs = await this.pipcook.job.list({ pipelineId: id });
     this.setState({ jobs });
+  }
+
+  selectPlugin = async (category = this.state.currentSelect) => {
+    this.setState({ currentSelect: category });
+    const id = this.state.plugins[category]?.id;
+    const metadata = await this.pipcook.plugin.fetch(id);
+    this.setState({ currentSelect: category, currentPlugin: metadata });
   }
 
   changeSelectPlugin = (itemName, value) => {
@@ -106,7 +133,7 @@ export default class PipelineDetail extends Component {
     this.setState({logVisible: !logVisible});
   }
 
-  renderPluginEditor({ plugin }) {
+  renderPluginEditor(plugin) {
     if (!plugin) {
       return;
     }
@@ -239,14 +266,10 @@ export default class PipelineDetail extends Component {
                   return choices[id] && plugins[id];
                 }).map(({ id, title }) => {
                   const plugin = plugins[id];
-                  const selectPlugin = () => {
-                    // TODO: render in right panel.
-                    this.setState({ currentSelect: id });
-                  };
-                  const titleNode = <span className="plugin-choose-title" onClick={selectPlugin}>{title}</span>;
-                  const selectNode = <Select className="plugin-choose-selector" defaultValue={plugin.package} hasClear>
+                  const titleNode = <span className="plugin-choose-title" onClick={() => this.selectPlugin(id)}>{title}</span>;
+                  const selectNode = <Select className="plugin-choose-selector" defaultValue={plugin.name} hasClear>
                     {choices[id].map((value) => <Select.Option key={value} value={value}>{value}</Select.Option>)}
-                    <Select.Option key={plugin.package} value={plugin.package}>{plugin.package}</Select.Option>
+                    <Select.Option key={plugin.name} value={plugin.name}>{plugin.name}</Select.Option>
                   </Select>;
                   return <Timeline.Item
                     key={id}
@@ -267,7 +290,7 @@ export default class PipelineDetail extends Component {
             </div>
           </div>
           <div className="plugin-config">
-            {plugins[currentSelect] && this.renderPluginEditor(plugins[currentSelect])}
+            {this.renderPluginEditor(this.state.currentPlugin)}
           </div>
           <div className="plugin-operate">
             <List className="plugin-operate-jobs" size="small" header={

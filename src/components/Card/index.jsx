@@ -8,9 +8,10 @@ const onClickItem = (url) => {
 export default function({ items }) {
   return (
       <div className="card-wrapper">
-        {items.map((item) => {
+        {items.map((item, idx) => {
           return (
             <div
+              key={idx}
               className="card-item"
               onClick={() => {
                 onClickItem(item.url);

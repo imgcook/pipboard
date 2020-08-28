@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Button, Timeline, Select, Divider, Tab, Icon, Affix } from '@alifd/next';
+import { Button, Timeline, Select, Divider, Tab, Icon, Affix, Form } from '@alifd/next';
 import queryString from 'query-string';
 import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
 
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook, redirect, createPluginsFromPipeline } from '@/utils/common';
 import { messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList } from '@/utils/config';
-import { get } from '@/utils/request';
 import './index.scss';
 
 function formatJSON(str) {
@@ -41,7 +40,7 @@ export default class JobDetailPage extends Component {
     const pipeline = await this.pipcook.pipeline.get(job.pipelineId);
 
     this.setState({
-      plugins: pipeline.plugins,
+      plugins: createPluginsFromPipeline(pipeline),
       pipelineId: job.pipelineId,
       jobId,
     });
@@ -119,13 +118,13 @@ export default class JobDetailPage extends Component {
   }
 
   restart = async () => {
-    const { jobId } = this.state;
-    await get('/job/restart', {
-      params: {
-        jobId, 
-        cwd: CWD,
-      },
-    });
+    // const { jobId } = this.state;
+    // await get('/job/restart', {
+    //   params: {
+    //     jobId, 
+    //     cwd: CWD,
+    //   },
+    // });
     location.reload();
   }
 
@@ -138,6 +137,9 @@ export default class JobDetailPage extends Component {
 
   render() {
     const { job, plugins, choices } = this.state;
+    const renderJSONView = (json) => {
+      return <pre className="job-logview">{json}</pre>;
+    };
     const renderTimelineItem = (title, extra) => {
       const titleNode = <span className="plugin-choose-title">{title}</span>;
       return <Timeline.Item  title={titleNode} {...extra} />;
@@ -147,6 +149,24 @@ export default class JobDetailPage extends Component {
         {logs.replace(/\r/g, '\n')}
         {job?.status === 1 && <Icon type="loading" />}
       </pre>;
+    };
+    const renderSummary = (data) => {
+      try {
+        const resp = JSON.parse(data?.evaluate?.maps);
+        const view = <div style={{ marginTop: 30 }}>
+          <Form style={{width: '60%'}} labelCol={{ fixedSpan: 10 }}>
+            <Form.Item label="accuracy">
+              <p>{resp.accuracy.toPrecision(5)}</p>
+            </Form.Item>
+            <Form.Item label="loss">
+              <p>{resp.loss.toPrecision(5)}</p>
+            </Form.Item>
+          </Form>
+        </div>;
+        return view;
+      } catch (err) {
+        return renderJSONView(data?.evaluate?.maps);
+      }
     };
 
     return (
@@ -199,8 +219,8 @@ export default class JobDetailPage extends Component {
             <Tab className="job-outputs-box">
               <Tab.Item title="stdout">{renderLogView(job?.stdout)}</Tab.Item>
               <Tab.Item title="stderr">{renderLogView(job?.stderr)}</Tab.Item>
-              <Tab.Item title="dataset"><pre className="job-logview">{job?.dataset}</pre></Tab.Item>
-              <Tab.Item title="summary"><pre className="job-logview">{job?.evaluate?.maps}</pre></Tab.Item>
+                <Tab.Item title="dataset">{renderJSONView(job?.dataset)}</Tab.Item>
+              <Tab.Item title="summary">{renderSummary(job)}</Tab.Item>
             </Tab>
           </div>
         </div>

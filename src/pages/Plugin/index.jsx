@@ -4,7 +4,6 @@ import { getPipcook, redirect } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { PLUGINS } from '@pipcook/pipcook-core/constants/plugins';
 import { DateTime } from 'luxon';
-import { get } from '@/utils/request';
 import './index.scss';
 
 export default class PluginList extends Component {
@@ -78,9 +77,7 @@ export default class PluginList extends Component {
 
   openPluginDialog = async (name) => {
     this.setState({ pluginDialogVisible: true });
-    const plugin = await get('/plugin/metadata', {
-      params: { name },
-    });
+    const plugin = await this.pipcook.plugin.fetchByName(name);
     const onClickSource = () => {
       if (plugin?.pipcook.source.from === 'npm') {
         window.open(`https://npmjs.com/package/${  plugin.name}`);
@@ -88,7 +85,6 @@ export default class PluginList extends Component {
         messageError(`unsupported source${  plugin?.pipcook.source.from}`);
       }
     };
-    console.log(plugin);
     const content = (
       <Box className="plugin-dialog-box">
         <Tag.Group>
@@ -144,7 +140,6 @@ export default class PluginList extends Component {
           const title = <h3 className="plugin-item-title" onClick={() => this.openPluginDialog(plugin.name)}>{plugin.name}</h3>;
 
           // TODO
-          const upgradePlugin = async () => {};
           const uninstallPlugin = async () => {};
 
           return <List.Item extra={extra} title={title} key={index}>
@@ -161,7 +156,6 @@ export default class PluginList extends Component {
                 </Tag>
               </Tag.Group>
               <Box className="plugin-item-actions" spacing={10} direction="row">
-                <Button className="plugin-item-button" text onClick={upgradePlugin}><Icon type="refresh" />Upgrade</Button>
                 <Button className="plugin-item-button" text onClick={uninstallPlugin}><Icon type="ashbin" />Uninstall</Button>
               </Box>
             </div>

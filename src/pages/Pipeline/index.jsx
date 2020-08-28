@@ -56,7 +56,7 @@ export default class Pipeline extends Component {
     }
   }
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     await this.fetchData(1);
   }
 
