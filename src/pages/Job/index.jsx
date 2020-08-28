@@ -27,9 +27,8 @@ export default class JobPage extends Component {
     // check if show job or pipeline from url
     try {
       const jobs = await this.pipcook.job.list({
-        // TODO: not support.
-        // offset: (currentPage - 1) * PAGE_SIZE, 
-        // limit: PAGE_SIZE,
+        offset: (currentPage - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
       });
       const result = jobs.map((item) => {
         return {
