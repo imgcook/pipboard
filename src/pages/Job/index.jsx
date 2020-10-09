@@ -7,7 +7,7 @@ import { JOB_MAP } from '@/utils/config';
 import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
 import './index.scss';
 
-const PAGE_SIZE = 30; // number of records in one page
+const PAGE_SIZE = 40; // number of records in one page
 
 export default class JobPage extends Component {
 
