@@ -1,6 +1,7 @@
 import React from 'react';
 import { DateTime } from 'luxon';
 import { Button, Dialog, Tag } from '@alifd/next';
+import { getPipcook } from '@/utils/common';
 
 /**
  * Pipeline templates
@@ -23,6 +24,8 @@ export const MODELLOAD = 'modelLoad';
 export const MODELDEFINE = 'modelDefine';
 export const MODELTRAIN = 'modelTrain';
 export const MODELEVALUATE = 'modelEvaluate';
+
+const pipcook = getPipcook();
 
 export const PLUGINS = [{
   id: DATACOLLECT,
@@ -166,7 +169,7 @@ export const JOB_MAP = [
     width: 40,
     cell: (value, index, record) => {
       const download = () => {
-        location.href = `/job/${record.id}/output.tar.gz`;
+        window.open(pipcook.job.getOutputDownloadURL(record.id))
       };
       return <Button size="small" disabled={record.status !== 'SUCCESS'} onClick={download}>Download</Button>;
     },

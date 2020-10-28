@@ -34,7 +34,7 @@ export default class PluginList extends Component {
     try {
       this.localPlugins = await this.pipcook.plugin.list();
       this.setState({
-        plugins: Object.assign([], this.localPlugins),
+        plugins: Array.from(this.localPlugins),
         loading: false,
       });
     } catch (err) {
@@ -96,7 +96,7 @@ export default class PluginList extends Component {
         <p>{plugin.description}</p>
         <Divider />
         <Box direction="row" flex={0.5} spacing={10} justify="flex-end">
-          <Button><Icon type="refresh" />Install</Button>
+          <Button><Icon type="refresh" />Reinstall</Button>
           <Button warning><Icon type="ashbin" />Uninstall</Button>
         </Box>
       </Box>
@@ -148,7 +148,7 @@ export default class PluginList extends Component {
                 <Tag type="normal" size="small" color="blue">v{plugin.version}</Tag>
                 <Tag type="normal" size="small"
                   onClick={this.createFilterSetter('datatype', plugin.datatype)}>
-                  {plugin.datatype}
+                  data type: {plugin.datatype}
                 </Tag>
                 <Tag type="normal" size="small"
                   onClick={this.createFilterSetter('category', plugin.category)}>
@@ -183,7 +183,7 @@ export default class PluginList extends Component {
         <Dialog
           className="plugin-dialog"
           footer={false}
-          height={200}
+          height={'200'}
           title={this.state.pluginDialogTitle}
           visible={this.state.pluginDialogVisible}
           onClose={this.closePluginDialog}>

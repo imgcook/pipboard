@@ -45,6 +45,7 @@ export default class JobDetailPage extends Component {
       jobId,
     });
 
+    // TODO 0 1 5 轮询 2 3 4 结束
     if (traceId && job.status < 2) {
       this.listenJobState(traceId);
     } else {
@@ -114,7 +115,7 @@ export default class JobDetailPage extends Component {
   }
 
   downloadOutput = () => {
-    location.href = `/job/${this.state.jobId}/output.tar.gz`;
+    window.open(this.pipcook.job.getOutputDownloadURL(this.state.jobId))
   }
 
   restart = async () => {

@@ -83,7 +83,7 @@ export default class Pipeline extends Component {
             />)
           }
         </Table>
-        <Pagination 
+        <Pagination
           current={currentPage} 
           total={totalCount} 
           pageSize={PAGE_SIZE} 

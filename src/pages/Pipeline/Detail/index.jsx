@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, NumberPicker, Card, Grid } from '@alifd/next';
 import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
-import { getPipcook, redirect, createPluginsFromPipeline } from '@/utils/common';
+import { getPipcook, redirect, createPluginsFromPipeline, formatPlugins2Update } from '@/utils/common';
 import { messageError, messageSuccess, messageLoading, messageHide } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import './index.scss';
@@ -53,9 +53,10 @@ export default class PipelineDetail extends Component {
         this.setState({ loading: false });
         return;
       }
+      const plugins = createPluginsFromPipeline(pipeline);
       this.setState({
         loading: false,
-        plugins: createPluginsFromPipeline(pipeline),
+        plugins,
         pipelineId: params.pipelineId,
       });
 
@@ -98,8 +99,9 @@ export default class PipelineDetail extends Component {
 
   savePipeline = async (showMessage = true) => {
     const { plugins, pipelineId } = this.state;
+    const pluginsForUpdate = formatPlugins2Update(plugins);
     try {
-      await this.pipcook.pipeline.update(pipelineId, { plugins });
+      await this.pipcook.pipeline.update(pipelineId, { plugins: pluginsForUpdate });
       if (showMessage) {
         messageSuccess('Update Pipeline Successfully');
       }
@@ -162,7 +164,7 @@ export default class PipelineDetail extends Component {
       author = 'no author';
     }
 
-    return [
+    return <Fragment>
       <Card free>
         <Card.Header
           title={plugin.name}
@@ -241,7 +243,7 @@ export default class PipelineDetail extends Component {
           return <Form.Item label={name} extra={itemExtra}>{input}</Form.Item>;
         })}
       </Form>,
-    ];
+    </Fragment>;
   }
 
   render() {

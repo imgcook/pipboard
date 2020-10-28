@@ -6,6 +6,10 @@ import './index.scss';
 
 export default class NewPipelineBox extends Component {
 
+  constructor(props) {
+    super(props);
+  }
+
   pipcook = getPipcook()
 
   state = {
@@ -19,6 +23,7 @@ export default class NewPipelineBox extends Component {
   }
 
   render() {
+    const { setOkBtnEnable } = this.props;
     return <Box direction="row" spacing={20} wrap style={{ width: 1000 }}>
       {PIPELINE_TEMPLATES.map(({ title, category, description }, index) => {
         const cardClassNames = [ 'new-pipeline-card' ];
@@ -27,6 +32,7 @@ export default class NewPipelineBox extends Component {
         }
         return <Card free key={index} className={cardClassNames.join(' ')} onClick={() => {
           this.setState({ selected: index });
+          setOkBtnEnable();
         }}>
           <Card.Header title={title} subTitle={category} />
           <Card.Content>{description}</Card.Content>

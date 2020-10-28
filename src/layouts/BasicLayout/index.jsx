@@ -35,6 +35,8 @@ export default class Dashboard extends Component {
 
   state = {
     newPipelineDialogVisible: false,
+    loading: false,
+    okDisabled: true,
   }
 
   select = (selectedKeys) => {
@@ -44,12 +46,27 @@ export default class Dashboard extends Component {
   onClosePipelineDialog = async (reason) => {
     console.log('the reason is', reason);
     if (reason === 'ok') {
+      this.setState({
+        loading: true
+      });
       await this.refs.newPipelineBox?.create();
+      this.setState({
+        loading: false
+      });
     }
     this.setState({ newPipelineDialogVisible: false });
   }
 
+  setOkBtnEnable = () => {
+    this.setState({
+      okDisabled: false
+    });
+  }
+
   render() {
+    const { loading, okDisabled } = this.state;
+    const okProps = { loading, disabled: okDisabled };
+
     return (
       <div className="dashboard">
         <Dialog
@@ -58,8 +75,9 @@ export default class Dashboard extends Component {
           visible={this.state.newPipelineDialogVisible}
           onClose={this.onClosePipelineDialog}
           onCancel={this.onClosePipelineDialog.bind(this, 'cancel')}
-          onOk={this.onClosePipelineDialog.bind(this, 'ok')}>
-          <NewPipelineBox ref="newPipelineBox" />
+          onOk={this.onClosePipelineDialog.bind(this, 'ok')}
+          okProps={okProps}>
+          <NewPipelineBox ref="newPipelineBox" setOkBtnEnable={this.setOkBtnEnable} />
         </Dialog>
         <Nav className="basic-nav"
           onSelect={this.select}
@@ -74,7 +92,7 @@ export default class Dashboard extends Component {
           <Nav.Item key="pipeline">Pipelines</Nav.Item>
           <Nav.Item key="job">Jobs</Nav.Item>
           <Nav.Item key="plugin">Plugins</Nav.Item>
-        </Nav> 
+        </Nav>
         {this.props.children}
       </div>
     );
