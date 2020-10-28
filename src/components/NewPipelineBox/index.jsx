@@ -6,10 +6,6 @@ import './index.scss';
 
 export default class NewPipelineBox extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   pipcook = getPipcook()
 
   state = {

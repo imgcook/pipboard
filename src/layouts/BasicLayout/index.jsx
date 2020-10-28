@@ -47,11 +47,11 @@ export default class Dashboard extends Component {
     console.log('the reason is', reason);
     if (reason === 'ok') {
       this.setState({
-        loading: true
+        loading: true,
       });
       await this.refs.newPipelineBox?.create();
       this.setState({
-        loading: false
+        loading: false,
       });
     }
     this.setState({ newPipelineDialogVisible: false });
@@ -59,7 +59,7 @@ export default class Dashboard extends Component {
 
   setOkBtnEnable = () => {
     this.setState({
-      okDisabled: false
+      okDisabled: false,
     });
   }
 

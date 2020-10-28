@@ -115,7 +115,7 @@ export default class JobDetailPage extends Component {
   }
 
   downloadOutput = () => {
-    window.open(this.pipcook.job.getOutputDownloadURL(this.state.jobId))
+    window.open(this.pipcook.job.getOutputDownloadURL(this.state.jobId));
   }
 
   restart = async () => {

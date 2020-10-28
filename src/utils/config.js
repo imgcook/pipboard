@@ -169,7 +169,7 @@ export const JOB_MAP = [
     width: 40,
     cell: (value, index, record) => {
       const download = () => {
-        window.open(pipcook.job.getOutputDownloadURL(record.id))
+        window.open(pipcook.job.getOutputDownloadURL(record.id));
       };
       return <Button size="small" disabled={record.status !== 'SUCCESS'} onClick={download}>Download</Button>;
     },

@@ -183,7 +183,7 @@ export default class PluginList extends Component {
         <Dialog
           className="plugin-dialog"
           footer={false}
-          height={'200'}
+          height='200'
           title={this.state.pluginDialogTitle}
           visible={this.state.pluginDialogVisible}
           onClose={this.closePluginDialog}>
