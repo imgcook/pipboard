@@ -36,7 +36,7 @@ jobs:
         git config --local user.name $USER_NAME
         git config --local user.email $USER_EMAIL
         git status
-        git remote add origin https://github.com/imgcook/pipboard.git
+        git remote add origin https://$MY_SECRET@github.com/imgcook/pipboard.git
         git checkout -b gh-pages
         git add --all
         git commit -m "deploy to Github pages"
