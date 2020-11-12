@@ -1,9 +1,10 @@
 import React, { Fragment, Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, NumberPicker, Card, Grid } from '@alifd/next';
 import queryString from 'query-string';
 // import ReactJson from 'react-json-view';
 
-import { getPipcook, redirect, createPluginsFromPipeline, formatPlugins2Update } from '@/utils/common';
+import { getPipcook, createPluginsFromPipeline, formatPlugins2Update } from '@/utils/common';
 import { messageError, messageSuccess, messageLoading, messageHide } from '@/utils/message';
 import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
 import './index.scss';
@@ -122,7 +123,7 @@ export default class PipelineDetail extends Component {
 
     messageHide();
     const job = await this.pipcook.job.run(pipelineId);
-    redirect(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
+    this.props.history.push(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
   }
 
   deletePipeline = async () => {
@@ -320,7 +321,14 @@ export default class PipelineDetail extends Component {
                 } else if (job.status === 3) {
                   description = 'failed';
                 }
-                const titleNode = <a href={`#/job/info?jobId=${job.id}`}>{job.createdAt}</a>;
+                const titleNode = <Link
+                  to={{
+                    pathname: "/job/info",
+                    search: `?jobId=${job.id}`,
+                  }}
+                >
+                  {job.createdAt}
+                </Link>
                 return <List.Item title={titleNode} key={job.id}>{description}</List.Item>;
               })}
             </List>

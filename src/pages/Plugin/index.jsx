@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Box, Button, Dialog, List, Icon, Input, Select, Tag, Divider } from '@alifd/next';
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { PLUGINS } from '@pipcook/pipcook-core/constants/plugins';
 import { DateTime } from 'luxon';
@@ -39,7 +39,7 @@ export default class PluginList extends Component {
       });
     } catch (err) {
       if (err.message === 'Network Error') {
-        redirect('/connect');
+        this.props.history.push('/connect');
       } else {
         messageError(err.message);
       }

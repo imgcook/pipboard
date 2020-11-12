@@ -3,7 +3,7 @@ import { Button, Timeline, Select, Divider, Tab, Icon, Affix, Form } from '@alif
 import queryString from 'query-string';
 import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
 
-import { getPipcook, redirect, createPluginsFromPipeline } from '@/utils/common';
+import { getPipcook, createPluginsFromPipeline } from '@/utils/common';
 import { messageSuccess } from '@/utils/message';
 import { PLUGINS, pluginList } from '@/utils/config';
 import './index.scss';
@@ -200,7 +200,7 @@ export default class JobDetailPage extends Component {
                 <Button size="medium"
                   type="secondary"
                   onClick={() => {
-                    redirect(`/pipeline/info?pipelineId=${this.state.pipelineId}`);
+                    this.props.history.push(`/pipeline/info?pipelineId=${this.state.pipelineId}`);
                   }}>View Pipeline</Button>
                 <Button size="medium" type="secondary"
                   onClick={this.restart}>Restart</Button>

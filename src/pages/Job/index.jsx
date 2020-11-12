@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Pagination } from '@alifd/next';
 
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook } from '@/utils/common';
 import { messageError } from '@/utils/message';
 import { JOB_MAP } from '@/utils/config';
 import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
@@ -46,7 +46,7 @@ export default class JobPage extends Component {
       });
     } catch (err) {
       if (err.message === 'Network Error') {
-        redirect('/connect');
+        this.props.history.push('/connect');
       } else {
         messageError(err.message);
       }

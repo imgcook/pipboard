@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from '@alifd/next';
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook } from '@/utils/common';
 import './index.scss';
 
 export default class Connect extends Component {
@@ -14,8 +14,7 @@ export default class Connect extends Component {
   async componentWillMount() {
     try {
       await this.pipcook.pipeline.list({ offset: 0, limit: 1 });
-      // TODO: redirect to history.back()?
-      redirect('/pipeline');
+      this.props.history.push('/pipeline');
     } catch (err) {
       // just catch the error.
       this.setState({ disconnected: true });

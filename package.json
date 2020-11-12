@@ -34,6 +34,7 @@
     "@ice/spec": "^0.1.1",
     "@types/jasmine": "^3.5.7",
     "@vercel/node": "^1.7.4",
+    "download": "^8.0.0",
     "eslint": "^7.7.0",
     "ice-plugin-fusion": "^0.1.4",
     "ice-plugin-moment-locales": "^0.1.0",
@@ -45,6 +46,8 @@
   "scripts": {
     "start": "ice-scripts dev",
     "compile": "ice-scripts build",
+    "postcompile": "npm run pullmodels",
+    "pullmodels": "node ./scripts/pullModels.js",
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint --cache --ext .js,.jsx ./",
     "stylelint": "stylelint ./**/*.scss",

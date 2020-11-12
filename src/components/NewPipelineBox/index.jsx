@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Box, Card } from '@alifd/next';
 import { PIPELINE_TEMPLATES } from '@/utils/config';
-import { getPipcook, redirect } from '@/utils/common';
+import { getPipcook } from '@/utils/common';
 import './index.scss';
 
 export default class NewPipelineBox extends Component {
@@ -15,7 +15,7 @@ export default class NewPipelineBox extends Component {
   async create() {
     const { template } = PIPELINE_TEMPLATES[this.state.selected];
     const pipeline = await this.pipcook.pipeline.create(template);
-    redirect(`/pipeline/info?pipelineId=${pipeline.id}`);
+    this.props.history.push(`/pipeline/info?pipelineId=${pipeline.id}`);
   }
 
   render() {

@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Nav, Icon, Button, Badge, Dialog, Divider } from '@alifd/next';
 import NewPipelineBox from '@/components/NewPipelineBox';
-import { redirect } from '@/utils/common';
 import './index.scss';
 
 export default class Dashboard extends Component {
 
   header = (
-    <a href="/index.html" style={{ color: '#000' }}>
-      <span className="header">PIPCOOK</span>
-    </a>
+    <Link to="/" className="header" style={{ color: '#000' }}>PIPCOOK</Link>
   )
 
   footer = (
     <div className="footer">
       <span className="footer-left">
-        <Button text onClick={() => redirect('/setting')}>
+        <Button text onClick={() => this.props.history.push('/setting')}>
           <Badge>
             <Icon type="set" />
           </Badge>
@@ -40,7 +38,7 @@ export default class Dashboard extends Component {
   }
 
   select = (selectedKeys) => {
-    location.href = `/index.html#/${selectedKeys[0]}`;
+    this.props.history.push(selectedKeys[0]);
   }
 
   onClosePipelineDialog = async (reason) => {
@@ -64,6 +62,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
+    const { match } = this.props;
     const { loading, okDisabled } = this.state;
     const okProps = { loading, disabled: okDisabled };
 
@@ -77,7 +76,7 @@ export default class Dashboard extends Component {
           onCancel={this.onClosePipelineDialog.bind(this, 'cancel')}
           onOk={this.onClosePipelineDialog.bind(this, 'ok')}
           okProps={okProps}>
-          <NewPipelineBox ref="newPipelineBox" setOkBtnEnable={this.setOkBtnEnable} />
+          <NewPipelineBox ref="newPipelineBox" setOkBtnEnable={this.setOkBtnEnable} {...this.props} />
         </Dialog>
         <Nav className="basic-nav"
           onSelect={this.select}
@@ -87,11 +86,11 @@ export default class Dashboard extends Component {
           type="normal"
           header={this.header}
           footer={this.footer}
-          selectedKeys={[location.hash.replace(/#\//, '') || 'home']}
+          selectedKeys={[match.path.match(/^\/\w*/)[0] || 'home']}
           triggerType="hover">
-          <Nav.Item key="pipeline">Pipelines</Nav.Item>
-          <Nav.Item key="job">Jobs</Nav.Item>
-          <Nav.Item key="plugin">Plugins</Nav.Item>
+          <Nav.Item key="/pipeline">Pipelines</Nav.Item>
+          <Nav.Item key="/job">Jobs</Nav.Item>
+          <Nav.Item key="/plugin">Plugins</Nav.Item>
         </Nav>
         {this.props.children}
       </div>

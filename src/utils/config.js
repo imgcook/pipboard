@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import { Button, Dialog, Tag } from '@alifd/next';
 import { getPipcook } from '@/utils/common';
@@ -56,9 +57,9 @@ export const PIPELINE_MAP = [
     name: 'ID',
     width: 50,
     cell: (value, index, record) => {
-      return <a href={`/index.html#/pipeline/info?pipelineId=${record.id}`}>
+      return <Link to={`/pipeline/info?pipelineId=${record.id}`}>
         {record.id.replace(/-/g, '').slice(0, 12)}
-      </a>;
+      </Link>;
     },
   },
   {
@@ -98,9 +99,9 @@ export const JOB_MAP = [
     name: 'ID',
     width: 50,
     cell: (value, index, record) => {
-      return <a href={`/index.html#/job/info?jobId=${record.id}`}>
+      return <Link to={`/job/info?jobId=${record.id}`}>
         {record.id.replace(/-/g, '').slice(0, 12)}
-      </a>;
+      </Link>;
     },
   },
   {
@@ -147,9 +148,9 @@ export const JOB_MAP = [
     name: 'Pipeline',
     width: 50,
     cell: (value, index, record) => {
-      return <a href={`/index.html#/pipeline/info?pipelineId=${record.pipelineId}`}>
+      return <Link to={`/pipeline/info?pipelineId=${record.pipelineId}`}>
         {record.id.replace(/-/g, '').slice(0, 12)}
-      </a>;
+      </Link>;
     },
   },
   {
