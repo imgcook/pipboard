@@ -2,7 +2,7 @@ const path = require('path');
 
 const config = {
   entry: 'src/index.jsx',
-  publicPath: '/pipboard/',
+  publicPath: './',
   plugins: [
     ['ice-plugin-fusion', {
       themePackage: '@icedesign/theme',
