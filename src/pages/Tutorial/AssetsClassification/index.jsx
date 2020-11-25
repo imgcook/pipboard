@@ -99,8 +99,8 @@ export default class AssetsClassification extends Component {
 
   async componentDidMount() {
     messageLoading('loading model from assetsClassification...');
-    this.model = await tf.loadGraphModel('/pipboard/static/models/assetsClassification/model.json');
-    this.means = (await axios.get('/pipboard/static/models/assetsClassification/mean.json')).data;
+    this.model = await tf.loadGraphModel('/static/models/assetsClassification/model.json');
+    this.means = (await axios.get('/static/models/assetsClassification/mean.json')).data;
     messageHide();
   }
 

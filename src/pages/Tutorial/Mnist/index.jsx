@@ -17,7 +17,7 @@ export default class Mnist extends Component {
   canvasObject = null
 
   async componentWillMount() {
-    this.model = await tf.loadLayersModel('/pipboard/static/models/mnist/model.json');
+    this.model = await tf.loadLayersModel('/static/models/mnist/model.json');
   }
 
   onChange = async (value) => {
