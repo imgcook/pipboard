@@ -328,7 +328,7 @@ export default class PipelineDetail extends Component {
                   }}
                 >
                   {job.createdAt}
-                </Link>
+                </Link>;
                 return <List.Item title={titleNode} key={job.id}>{description}</List.Item>;
               })}
             </List>

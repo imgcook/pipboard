@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Card from '@/components/Card';
 import './index.scss';
 
@@ -14,12 +14,10 @@ const items = [{
   path: '/tutorial/assets-classification',
 }];
 
-export default class Home extends Component {
-  render() {
-    return (
-      <div className="tutorial">
-        <Card items = {items} {...this.props} />
-      </div>
-    );
-  }
+export default function Home (props) {
+  return (
+    <div className="tutorial">
+      <Card items = {items} {...props} />
+    </div>
+  );
 }
