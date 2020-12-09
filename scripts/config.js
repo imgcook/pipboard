@@ -5,6 +5,8 @@ const modulesOSSUrl = {
     "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/mnist/weights.bin",
   ],
   assetsClassification: [
+    "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/assetsClassification/model.json",
+    "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/assetsClassification/mean.json",
     "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/assetsClassification/group1-shard1of13.bin",
     "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/assetsClassification/group1-shard2of13.bin",
     "https://ai-sample.oss-cn-hangzhou.aliyuncs.com/pipcook/showcase/assetsClassification/group1-shard3of13.bin",
