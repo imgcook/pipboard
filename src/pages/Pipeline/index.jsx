@@ -1,98 +1,53 @@
-import React, { Component } from 'react';
-import { Table, Pagination } from '@alifd/next';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Table, Tag } from 'antd';
+import dayjs from 'dayjs';
 
-import { messageError } from '@/utils/message';
-import { getPipcook } from '@/utils/common';
-import { PIPELINE_MAP, PIPELINE_STATUS } from '@/utils/config';
+import { pipeline } from '../../common/service';
 
-import './index.scss';
+const columns = [
+  {
+    title: 'ID',
+    dataIndex: 'id',
+    render: (val) => <Link to={`/pipeline/info?pipelineId=${val}`}>{val}</Link>,
+  },
+  {
+    title: 'Dataset',
+    dataIndex: 'dataCollect',
+  },
+  {
+    title: 'Model',
+    dataIndex: 'modelDefine',
+  },
+  {
+    title: 'Jobs',
+    dataIndex: 'jobs',
+    render: (val) => <Tag color={'geekblue'}>{val.length}</Tag>,
+  },
+  {
+    title: 'Created At',
+    dataIndex: 'createdAt',
+    render: (val) => <span>{dayjs(val).format('M/D/YYYY, h:m:s a')}</span>,
+  },
+];
 
-const PAGE_SIZE = 30; // number of records in one page
+export default function Pipeline() {
 
-export default class Pipeline extends Component {
+  const [data, setData] = useState([]);
 
-  pipcook = getPipcook()
-
-  state = {
-    models: [],
-    fields: PIPELINE_MAP, // pipeline or job,
-    currentPage: 1,
-    totalCount: 0,
-    renderable: false,
+  const list = (currentPage) => {
+    return pipeline.list(currentPage);
   }
 
-  changePage = async (value) => {
-    await this.fetchData(value);
-  }
+  useEffect(() => {
+    list(1).then(res => {
+      setData(res);
+    });
+  }, []);
 
-  fetchData = async (currentPage) => {
-    try {
-      const response = await this.pipcook.pipeline.list({
-        offset: (currentPage - 1) * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      });
-      const result = response.map((item) => {
-        return {
-          ...item,
-          createdAt: new Date(item.createdAt).toLocaleString(),
-          endTime: new Date(item.endTime).toLocaleString(),
-          status: PIPELINE_STATUS[item.status],
-        };
-      });
-      this.setState({
-        models: result,
-        totalCount: response.length,
-        currentPage,
-        renderable: true,
-      });
-    } catch (err) {
-      if (err.message === 'Network Error') {
-        this.setState({ renderable: false });
-        this.props.history.push('/connect');
-      } else {
-        this.setState({ renderable: true });
-        messageError(err.message);
-      }
-    }
-  }
-
-  componentDidMount = async () => {
-    await this.fetchData(1);
-  }
-
-  render() {
-    const { models, fields, currentPage, totalCount, renderable } = this.state;
-    if (!renderable) {
-      return <div />;
-    }
-    return (
-      <div className="pipeline">
-        <Table dataSource={models}
-          hasBorder={false}
-          stickyHeader
-          offsetTop={45}>
-          {
-            fields.map(field => <Table.Column 
-              key={field.name}
-              title={field.name}
-              dataIndex={field.field}
-              cell={field.cell}
-              sortable={field.sortable || false}
-              width={field.width}
-              align="center"
-            />)
-          }
-        </Table>
-        <Pagination
-          current={currentPage} 
-          total={totalCount} 
-          pageSize={PAGE_SIZE} 
-          type="simple"
-          className="pagination-wrapper" 
-          onChange={this.changePage}
-        />
-      </div>
-    );
-  }
-  
-}
+  return <Table
+    rowKey={'id'}
+    columns={columns}
+    dataSource={data}
+  />;
+};

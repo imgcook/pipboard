@@ -1,3 +1,7 @@
+.cache/
+.parcel-cache/
+coverage/
+dist*.log
 node_modules
 output
 /lerna-debug.log
@@ -27,3 +31,11 @@ packages/daemon/.github/**
 __pycache__
 
 .vercel
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

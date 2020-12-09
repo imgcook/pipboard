@@ -1,92 +1,128 @@
-import React, { Component } from 'react';
-import { Table, Pagination } from '@alifd/next';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Table, Modal, Tag, Button } from 'antd';
+import dayjs from 'dayjs';
+import { PipelineStatus } from '@pipcook/pipcook-core/dist/types/database';
+import {
+  CheckCircleOutlined,
+  SyncOutlined,
+  CloseCircleOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
 
-import { getPipcook } from '@/utils/common';
-import { messageError } from '@/utils/message';
-import { JOB_MAP } from '@/utils/config';
-import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
-import './index.scss';
+import { job } from '../../common/service';
 
-const PAGE_SIZE = 40; // number of records in one page
-
-export default class JobPage extends Component {
-
-  pipcook = getPipcook()
-
-  state = {
-    models: [],
-    fields: JOB_MAP, // pipeline or job,
-    currentPage: 1,
-    totalCount: 0,
-  }
-
-  changePage = async (value) => {
-    await this.fetchData(value);
-  }
-
-  fetchData = async (currentPage) => {
-    // check if show job or pipeline from url
-    try {
-      const jobs = await this.pipcook.job.list({
-        offset: (currentPage - 1) * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      });
-      const result = jobs.map((item) => {
-        return {
-          ...item,
-          createdAt: new Date(item.createdAt).toLocaleString(),
-          endTime: new Date(item.endTime).toLocaleString(),
-          status: PipelineStatus[item.status],
-        };
-      });
-      this.setState({
-        models: result,
-        totalCount: jobs.length,
-        currentPage,
-      });
-    } catch (err) {
-      if (err.message === 'Network Error') {
-        this.props.history.push('/connect');
+const columns = [
+  {
+    title: 'ID',
+    dataIndex: 'id',
+    render: (val) => <Link to={`/job/info?jobId=${val}`}>{val}</Link>,
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (val) => {
+      const colors = {
+        INIT: 'default',
+        RUNNING: 'processing',
+        SUCCESS: 'success',
+        FAIL: 'error',
+      };
+      const Icon = ({status}) => {
+        switch (status) {
+          case 'INIT':
+            return <ClockCircleOutlined />
+          case 'RUNNING':
+            return <SyncOutlined spin />
+          case 'SUCCESS':
+            return <CheckCircleOutlined />
+          case 'FAIL':
+            return <CloseCircleOutlined />
+          default:
+            break;
+        }
+      };
+      return <Tag icon={<Icon status={val} />} size="small" color={colors[val]}>{val}</Tag>;
+    }
+  },
+  {
+    title: 'Evaluation',
+    key: 'evaluateMap',
+    render: (_, record) => {
+      let result = null;
+      if (record.evaluateMap) {
+        result = JSON.parse(record.evaluateMap);
+        if (result?.pass) {
+          result.pass = undefined;
+        }
       } else {
-        messageError(err.message);
+        return <span>no result</span>;
+      }
+      if (record.evaluatePass || record.evaluateMap) {
+        const content = JSON.stringify(result, null, 2);
+        const onClick = () => {
+          const config = {
+            title: 'evaluation',
+            content: <div>{content}</div>,
+          };
+          Modal.info(config);
+        };
+        return <Button size="small" onClick={onClick}>{content.slice(0, 40)}</Button>;
+      } else {
+        return <Tag size="small" color="red">{record.error}</Tag>;
       }
     }
-  }
+  },
+  {
+    title: 'Pipeline',
+    dataIndex: 'pipelineId',
+    render: (val) => <Link to={`/pipeline/info?pipelineId=${val}`}>{val}</Link>,
+  },
+  {
+    title: 'End Time',
+    dataIndex: 'endTime',
+    render: (val) => (
+      val === '1/1/1970, 8:00:00 AM' ? <span>-</span> :
+      <span>{dayjs(val).format('M/D/YYYY, h:m:s a')}</span>
+    ),
+  },
+  {
+    title: 'Model',
+    dataIndex: 'id',
+    render: (val, record) => (
+      <Button
+        size="small"
+        disabled={record.status !== 'SUCCESS'}
+        onClick={() => window.open(job.getOutputDownloadURL(val))}
+      >
+        Download
+      </Button>
+    ),
+  },
+];
 
-  componentDidMount = async () => {
-    await this.fetchData(1);
-  }
+export default function Job() {
 
-  render() {
-    const { models, fields, currentPage, totalCount } = this.state;
-    return (
-      <div className="job">
-        <Table dataSource={models}
-          hasBorder={false}
-          stickyHeader
-          offsetTop={45}>
-          {
-            fields.map(field => <Table.Column 
-              key={field.name}
-              title={field.name}
-              dataIndex={field.field}
-              cell={field.cell}
-              sortable={field.sortable || false}
-              width={field.width}
-              align="center"
-            />)
-          }
-        </Table>
-        <Pagination 
-          current={currentPage} 
-          total={totalCount} 
-          pageSize={PAGE_SIZE} 
-          type="simple"
-          className="pagination-wrapper" 
-          onChange={this.changePage}
-        />
-      </div>
-    );
-  }
-  
-}
+  const [data, setData] = useState([]);
+
+  const list = (currentPage) => {
+    return job.list(currentPage).then(res => {
+      return res.map((item) => ({
+        ...item,
+        status: PipelineStatus[item.status]
+      }));
+    });
+  };
+
+  useEffect(() => {
+    list(1).then(res => {
+      setData(res);
+    });
+  }, []);
+
+  return <Table
+    rowKey={'id'}
+    columns={columns}
+    dataSource={data}
+  />;
+};

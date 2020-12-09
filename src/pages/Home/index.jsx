@@ -1,6 +1,7 @@
 import React from 'react';
-import Card from '@/components/Card';
-import './index.scss';
+
+import Card from '../../components/Card';
+import './index.less';
 
 const items = [{
   title: 'Tutorials',

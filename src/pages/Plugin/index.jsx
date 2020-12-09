@@ -1,196 +1,86 @@
-import React, { Component } from 'react';
-import { Box, Button, Dialog, List, Icon, Input, Select, Tag, Divider } from '@alifd/next';
-import { getPipcook } from '@/utils/common';
-import { messageError } from '@/utils/message';
-import { PLUGINS } from '@pipcook/pipcook-core/constants/plugins';
-import { DateTime } from 'luxon';
-import './index.scss';
+import React, { useState } from "react";
+import { Row, Col, Input, Select, Typography, List, Tag, Space, Button } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
-export default class PluginList extends Component {
+const { Search } = Input;
+const { Option } = Select;
+const { Text } = Typography;
 
-  pipcook = getPipcook()
+const data = [
+  {
+    title: 'Ant Design Title 1',
+  },
+  {
+    title: 'Ant Design Title 2',
+  },
+  {
+    title: 'Ant Design Title 3',
+  },
+  {
+    title: 'Ant Design Title 4',
+  },
+];
 
-  localPlugins = []
+export default function Plugin() {
 
-  state = {
-    loading: true,
-    plugins: [],
-    filter: {
-      category: undefined,
-      datatype: undefined,
-    },
-    searchKey: null,
-    pluginDialogVisible: false,
-    pluginDialogTitle: '',
-    pluginDialogContent: null,
+  const [pluginLength, setPluginLength] = useState(0);
+
+  const onSearch = value => console.log(value);
+
+  const handleChange = value => {
+    console.log(`selected ${value}`);
   }
 
-  async componentWillMount() {
-    await this.fetch();
-  }
-
-  fetch = async () => {
-    this.setState({ loading: true });
-    try {
-      this.localPlugins = await this.pipcook.plugin.list();
-      this.setState({
-        plugins: Array.from(this.localPlugins),
-        loading: false,
-      });
-    } catch (err) {
-      if (err.message === 'Network Error') {
-        this.props.history.push('/connect');
-      } else {
-        messageError(err.message);
-      }
-    }
-  }
-
-  createFilterHandler = (type) => {
-    return (val) => {
-      this.setState(({ filter }) => {
-        const newFilter = Object.assign({}, filter);
-        newFilter[type] = val;
-        // create new plugins.
-        const newPlugins = this.localPlugins.filter((plugin) => {
-          if (newFilter.category && newFilter.category !== plugin.category) {
-            return false;
-          }
-          if (newFilter.datatype && newFilter.datatype !== plugin.datatype) {
-            return false;
-          }
-          return true;
-        });
-        return { filter: newFilter, plugins: newPlugins };
-      });
-    };
-  }
-
-  createFilterSetter = (type, value) => {
-    const handler = this.createFilterHandler(type);
-    return () => handler(value);
-  }
-
-  onSearch = async () => {
-    await this.openPluginDialog(this.state.searchKey);
-  }
-
-  openPluginDialog = async (name) => {
-    this.setState({ pluginDialogVisible: true });
-    const plugin = await this.pipcook.plugin.fetchByName(name);
-    const onClickSource = () => {
-      if (plugin?.pipcook.source.from === 'npm') {
-        window.open(`https://npmjs.com/package/${  plugin.name}`);
-      } else {
-        messageError(`unsupported source${  plugin?.pipcook.source.from}`);
-      }
-    };
-    const content = (
-      <Box className="plugin-dialog-box">
-        <Tag.Group>
-          <Tag type="normal" size="small" color="blue">v{plugin?.version}</Tag>
-          <Tag type="normal" size="small">{plugin?.pipcook.datatype}</Tag>
-          <Tag type="normal" size="small">{plugin?.pipcook.category}</Tag>
-          <Tag type="normal" size="small" onClick={onClickSource}>source: {plugin?.pipcook.source.from}</Tag>
-        </Tag.Group>
-        <p>{plugin.description}</p>
-        <Divider />
-        <Box direction="row" flex={0.5} spacing={10} justify="flex-end">
-          <Button><Icon type="refresh" />Reinstall</Button>
-          <Button warning><Icon type="ashbin" />Uninstall</Button>
-        </Box>
-      </Box>
-    );
-    this.setState({
-      pluginDialogTitle: plugin.name,
-      pluginDialogContent: content,
-    });
-  }
-
-  closePluginDialog = () => {
-    this.setState({
-      pluginDialogVisible: false,
-      pluginDialogContent: null,
-    });
-  }
-
-  renderPluginList() {
-    const pluginLength = this.state.plugins.length;
-    const headerNode = <Box className="plugin-list-header" direction="row" spacing={10}>
-      <Select placeholder="select plugin category"
-        value={this.state.filter.category}
-        hasClear
-        onChange={this.createFilterHandler('category')}>
-        {PLUGINS.map((val, index) => <Select.Option key={index} value={val}>category: {val}</Select.Option>)}
-      </Select>
-      <Select placeholder="select data type"
-        value={this.state.filter.datatype}
-        hasClear
-        onChange={this.createFilterHandler('datatype')}>
-        <Select.Option value="image">data: image</Select.Option>
-        <Select.Option value="text">data: text</Select.Option>
-      </Select>
-      {this.state.loading ?
-        <Icon type="loading" /> : <span>{pluginLength} plugins are displayed.</span>}
-    </Box>;
-    return (
-      <List className="plugin-list-comp" header={headerNode}>
-        {this.state.plugins.map((plugin, index) => {
-          const extra = `installed at ${DateTime.fromISO(plugin.updatedAt).toRelative()}`;
-          const title = <h3 className="plugin-item-title" onClick={() => this.openPluginDialog(plugin.name)}>{plugin.name}</h3>;
-
-          // TODO
-          const uninstallPlugin = async () => {};
-
-          return <List.Item extra={extra} title={title} key={index}>
-            <div className="plugin-item-container">
-              <Tag.Group>
-                <Tag type="normal" size="small" color="blue">v{plugin.version}</Tag>
-                <Tag type="normal" size="small"
-                  onClick={this.createFilterSetter('datatype', plugin.datatype)}>
-                  data type: {plugin.datatype}
-                </Tag>
-                <Tag type="normal" size="small"
-                  onClick={this.createFilterSetter('category', plugin.category)}>
-                  category: {plugin.category}
-                </Tag>
-              </Tag.Group>
-              <Box className="plugin-item-actions" spacing={10} direction="row">
-                <Button className="plugin-item-button" text onClick={uninstallPlugin}><Icon type="ashbin" />Uninstall</Button>
-              </Box>
-            </div>
-          </List.Item>;
-        })}
-      </List>
-    );
-  }
-
-  render() {
-    const searchIcon = <Icon type="add" size="medium" style={{margin: 8}}/>;
-    return (
-      <div className="plugin-list">
-        <Box align="center">
-          <Input className="search-input"
+  return (
+    <div className="plugin">
+      <Row gutter={[0, 9]}>
+        <Col span={24}>
+          <Search
+            placeholder="Input a plugin package(npm) name or git address to install"
+            onSearch={onSearch}
+            enterButton
             size="large"
-            innerAfter={searchIcon}
-            onChange={(v) => this.setState({ searchKey: v })}
-            onPressEnter={this.onSearch}
-            placeholder="Input a plugin package(npm) name or git address to install" />
-        </Box>
-        <Box align="center">
-          {this.renderPluginList()}
-        </Box>
-        <Dialog
-          className="plugin-dialog"
-          footer={false}
-          height='200'
-          title={this.state.pluginDialogTitle}
-          visible={this.state.pluginDialogVisible}
-          onClose={this.closePluginDialog}>
-          {this.state.pluginDialogContent}
-        </Dialog>
-      </div>
-    );
-  }
-  
-}
+          />
+        </Col>
+      </Row>
+      <Row gutter={[16, 9]}>
+        <Col span={8}>
+          <Select allowClear placeholder={"select plugin category"} style={{ width: "100%" }} size={"large"} onChange={handleChange}>
+            <Option value="jack">Jack</Option>
+            <Option value="lucy">Lucy</Option>
+            <Option value="Yiminghe">yiminghe</Option>
+          </Select>
+        </Col>
+        <Col span={8}>
+          <Select allowClear placeholder={"select data type"} style={{ width: "100%" }} size={"large"} onChange={handleChange}>
+            <Option value="jack">Jack</Option>
+            <Option value="lucy">Lucy</Option>
+            <Option value="Yiminghe">yiminghe</Option>
+          </Select>
+        </Col>
+        <Col span={8} style={{display: "flex", alignItems: "center"}}>
+          <Text strong style={{fontSize: "18px"}}>{pluginLength} plugins are displayed.</Text>
+        </Col>
+      </Row>
+      <List
+        itemLayout="horizontal"
+        dataSource={data}
+        renderItem={item => (
+          <List.Item
+            actions={[<Button type="text" icon={<DeleteOutlined />}>Uninstall</Button>]}
+          >
+            <List.Item.Meta
+              title="@pipcook/plugins-csv-data-collect"
+              description={<Space>
+                <Tag color="blue">v1.1.0</Tag>
+                <Tag color="default">data type: text</Tag>
+                <Tag color="default">category: dataCollect</Tag>
+              </Space>}
+            />
+            <div>{`installed at 1个月前`}</div>
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+};
