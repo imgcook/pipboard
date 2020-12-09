@@ -3,19 +3,20 @@ import path from 'path';
 import Loadable from 'react-loadable';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
-import Layout from '../Layout';
-import Loading from '../Components/Loading';
+import Layout from '~/Layout';
+import Loading from '~/components/Loading';
 import routeConfig from './config';
-import Home from '../Pages/Home';
-import Job from '../Pages/Job';
-import Pipeline from '../Pages/Pipeline';
-import Plugin from '../Pages/Plugin';
-import Setting from '../Pages/Setting';
-import Tutorial from '../Pages/Tutorial';
+import Home from '~/pages/Home';
+import Job from '~/pages/Job';
+import Pipeline from '~/pages/Pipeline';
+import Plugin from '~/pages/Plugin';
+import Setting from '~/pages/Setting';
+import Tutorial from '~/pages/Tutorial';
 
 async function createRoutes(list) {
   return Promise.all(Object.keys(list).map(routeSetter.bind(null, list)));
 }
+
 
 function switchRoute(name) {
   switch (name) {
@@ -62,6 +63,7 @@ async function routeSetter(list, route) {
     };
   }
 }
+
 
 export default function Router() {
   const [routes, setRoutes] = useState([]);
