@@ -1,83 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Select, Typography, List, Tag, Space, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { getPipcook } from '~/common/service';
+import { PLUGINS } from '@pipcook/pipcook-core/dist/constants/plugins';
 
 const { Search } = Input;
 const { Option } = Select;
 const { Text } = Typography;
-
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
+const pipcook = getPipcook();
+const filters = {
+  category: undefined,
+  datatype: undefined,
+};
 
 export default function Plugin() {
+  const [plugins, setPlugins] = useState([]);
+  const [pluginsToShow, setPluginsToShow] = useState([]);
 
-  const [pluginLength, setPluginLength] = useState(0);
-
-  const onSearch = value => console.log(value);
+  // const onSearch = value => console.log(value);
+  const filterPluginsToShow = () => {
+    console.log(filters);
+    setPluginsToShow(
+      plugins.filter((plugin) => {
+        if (filters.category && filters.category !== plugin.category) {
+          return false;
+        }
+        if (filters.datatype && filters.datatype !== plugin.datatype) {
+          return false;
+        }
+        return true;
+      })
+    );
+  }
+  const filterCategory = (category) => {
+    filters.category = category;
+    filterPluginsToShow();
+  };
+  const filterDataType = (datatype) => {
+    filters.datatype = datatype;
+    filterPluginsToShow();
+  };
 
   const handleChange = value => {
     console.log(`selected ${value}`);
   }
 
+  useEffect(() => {
+    (async function () {
+      const data = await pipcook.plugin.list();
+      setPlugins(data);
+      setPluginsToShow(data);
+    })();
+  }, []);
+
   return (
     <div className="plugin">
-      <Row gutter={[0, 9]}>
+      {/* <Row gutter={[0, 9]}>
         <Col span={24}>
           <Search
             placeholder="Input a plugin package(npm) name or git address to install"
             onSearch={onSearch}
             enterButton
-            size="large"
           />
         </Col>
-      </Row>
+      </Row> */}
       <Row gutter={[16, 9]}>
         <Col span={8}>
-          <Select allowClear placeholder={"select plugin category"} style={{ width: "100%" }} size={"large"} onChange={handleChange}>
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="Yiminghe">yiminghe</Option>
+          <Select allowClear placeholder={"select plugin category"} style={{ width: "100%" }} onChange={filterCategory}>
+            {PLUGINS.map((category) => <Option value={category} key={category}>category: {category}</Option>)}
           </Select>
         </Col>
         <Col span={8}>
-          <Select allowClear placeholder={"select data type"} style={{ width: "100%" }} size={"large"} onChange={handleChange}>
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="Yiminghe">yiminghe</Option>
+          <Select allowClear placeholder={"select data type"} style={{ width: "100%" }} onChange={filterDataType}>
+            <Option value="text">data: text</Option>
+            <Option value="image">data: image</Option>
           </Select>
         </Col>
         <Col span={8} style={{display: "flex", alignItems: "center"}}>
-          <Text strong style={{fontSize: "18px"}}>{pluginLength} plugins are displayed.</Text>
+          <Text strong style={{fontSize: "18px"}}>{pluginsToShow.length} plugins are displayed.</Text>
         </Col>
       </Row>
       <List
         itemLayout="horizontal"
-        dataSource={data}
+        dataSource={pluginsToShow}
         renderItem={item => (
           <List.Item
             actions={[<Button type="text" icon={<DeleteOutlined />}>Uninstall</Button>]}
+            style={{ paddingBottom: 20 }}
           >
             <List.Item.Meta
-              title="@pipcook/plugins-csv-data-collect"
+              title={item.name}
               description={<Space>
-                <Tag color="blue">v1.1.0</Tag>
-                <Tag color="default">data type: text</Tag>
-                <Tag color="default">category: dataCollect</Tag>
+                <Tag color="blue">{item.version}</Tag>
+                <Tag color="default">data type: {item.datatype}</Tag>
+                <Tag color="default">category: {item.category}</Tag>
               </Space>}
             />
-            <div>{`installed at 1个月前`}</div>
+            <div>installed at {item.updatedAt}</div>
           </List.Item>
         )}
       />
