@@ -8,6 +8,7 @@ import {
   SyncOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
+  Loading3QuartersOutlined,
 } from '@ant-design/icons';
 
 import { job } from '../../common/service';
@@ -22,27 +23,20 @@ const columns = [
     title: 'Status',
     dataIndex: 'status',
     render: (val) => {
-      const colors = {
+      const colorsMap = {
         INIT: 'default',
+        PENDING: 'default',
         RUNNING: 'processing',
         SUCCESS: 'success',
         FAIL: 'error',
+        CANCELED: 'error',
       };
-      const Icon = ({status}) => {
-        switch (status) {
-          case 'INIT':
-            return <ClockCircleOutlined />
-          case 'RUNNING':
-            return <SyncOutlined spin />
-          case 'SUCCESS':
-            return <CheckCircleOutlined />
-          case 'FAIL':
-            return <CloseCircleOutlined />
-          default:
-            break;
-        }
-      };
-      return <Tag icon={<Icon status={val} />} size="small" color={colors[val]}>{val}</Tag>;
+      return <Tag
+        size="small"
+        color={colorsMap[val]}
+        style={{ width: 100, textAlign: 'center' }}>
+        {`${val[0]}${val.slice(1).toLowerCase()}`}
+      </Tag>;
     }
   },
   {
@@ -56,7 +50,7 @@ const columns = [
           result.pass = undefined;
         }
       } else {
-        return <span>no result</span>;
+        return <span>-</span>;
       }
       if (record.evaluatePass || record.evaluateMap) {
         const content = JSON.stringify(result, null, 2);
