@@ -129,9 +129,9 @@ export default function () {
         <Tab.Item title="Daemon">
           <DaemonSetting />
         </Tab.Item>
-        <Tab.Item title="Plugins">
+        {/* <Tab.Item title="Plugins">
           <PluginSetting />
-        </Tab.Item>
+        </Tab.Item> */}
       </Tab>
     </div>
   );

@@ -17,7 +17,7 @@ const items = [{
 export default function Home (props) {
   return (
     <div className="home">
-      <Card items = {items} {...props} />
+      <Card items = {items.slice(0, 1)} {...props} />
     </div>
   );
 }
