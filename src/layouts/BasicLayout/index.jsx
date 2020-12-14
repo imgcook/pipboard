@@ -24,10 +24,10 @@ export default class Dashboard extends Component {
           </Badge>
         </Button>
       </span>
-      <Divider direction="ver" />
+      {/* <Divider direction="ver" />
       <Button text className="add-pipeline-btn" onClick={() => this.setState({ newPipelineDialogVisible: true })}>
         <Icon type="add" />New Pipeline
-      </Button>
+      </Button> */}
     </div>
   )
 
@@ -88,9 +88,10 @@ export default class Dashboard extends Component {
           footer={this.footer}
           selectedKeys={[match.path.match(/^\/\w*/)[0] || 'home']}
           triggerType="hover">
-          <Nav.Item key="/pipeline">Pipelines</Nav.Item>
+          <Nav.Item key="/tutorial">Tutorials</Nav.Item>
+          {/* <Nav.Item key="/pipeline">Pipelines</Nav.Item>
           <Nav.Item key="/job">Jobs</Nav.Item>
-          <Nav.Item key="/plugin">Plugins</Nav.Item>
+          <Nav.Item key="/plugin">Plugins</Nav.Item> */}
         </Nav>
         {this.props.children}
       </div>
