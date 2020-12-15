@@ -50,4 +50,4 @@ export default function Pipeline() {
     columns={columns}
     dataSource={data}
   />;
-};
+}

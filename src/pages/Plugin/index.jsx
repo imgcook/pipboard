@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Select, Typography, List, Tag, Space, Button } from 'antd';
+import { Row, Col, Select, Typography, List, Tag, Space, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { getPipcook } from '~/common/service';
 import { PLUGINS } from '@pipcook/pipcook-core/dist/constants/plugins';
 
-const { Search } = Input;
 const { Option } = Select;
 const { Text } = Typography;
 const pipcook = getPipcook();
@@ -19,7 +18,6 @@ export default function Plugin() {
 
   // const onSearch = value => console.log(value);
   const filterPluginsToShow = () => {
-    console.log(filters);
     setPluginsToShow(
       plugins.filter((plugin) => {
         if (filters.category && filters.category !== plugin.category) {
@@ -32,17 +30,15 @@ export default function Plugin() {
       })
     );
   }
+
   const filterCategory = (category) => {
     filters.category = category;
     filterPluginsToShow();
-  };
+  }
+
   const filterDataType = (datatype) => {
     filters.datatype = datatype;
     filterPluginsToShow();
-  };
-
-  const handleChange = value => {
-    console.log(`selected ${value}`);
   }
 
   useEffect(() => {
@@ -50,8 +46,8 @@ export default function Plugin() {
       const data = await pipcook.plugin.list();
       setPlugins(data);
       setPluginsToShow(data);
-    })();
-  }, []);
+    })()
+  }, [])
 
   return (
     <div className="plugin">
@@ -85,7 +81,7 @@ export default function Plugin() {
         dataSource={pluginsToShow}
         renderItem={item => (
           <List.Item
-            actions={[<Button type="text" icon={<DeleteOutlined />}>Uninstall</Button>]}
+            actions={<Button type="text" icon={<DeleteOutlined />}>Uninstall</Button>}
             style={{ paddingBottom: 20 }}
           >
             <List.Item.Meta
@@ -102,4 +98,4 @@ export default function Plugin() {
       />
     </div>
   );
-};
+}

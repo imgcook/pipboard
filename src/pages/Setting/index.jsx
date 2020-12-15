@@ -50,8 +50,8 @@ export default function Setting() {
       <TabPane tab="Daemon" key="2">
         <Form labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} colon={false}>
           <Form.Item label="remote">
-            <Form.Item name="remote" noStyle>
-              <Input defaultValue="http://localhost:6927" />
+            <Form.Item name="remote" noStyle initialValue="http://localhost:6927">
+              <Input />
             </Form.Item>
             <Tooltip title="Useful information">
               <Text type="secondary">The remote url prefix to Daemon</Text>
@@ -102,4 +102,4 @@ export default function Setting() {
       </TabPane>
     </Tabs>
   </>;
-};
+}

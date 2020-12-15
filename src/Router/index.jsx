@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import path from 'path';
-import Loadable from 'react-loadable';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
-import Layout from '~/Layout';
-import Loading from '~/components/Loading';
+import Layout from '~/layout';
 import routeConfig from './config';
 import Home from '~/pages/Home';
 import Job from '~/pages/Job';
+import JobDetail from '~/pages/Job/Detail';
 import Pipeline from '~/pages/Pipeline';
+import PipelineDetail from '~/pages/Pipeline/Detail';
 import Plugin from '~/pages/Plugin';
 import Setting from '~/pages/Setting';
 import Tutorial from '~/pages/Tutorial';
+import Mnist from '~/pages/Tutorial/Mnist';
+import AssetsClassification from '~/pages/Tutorial/AssetsClassification';
 
 async function createRoutes(list) {
   return Promise.all(Object.keys(list).map(routeSetter.bind(null, list)));
 }
-
 
 function switchRoute(name) {
   switch (name) {
@@ -26,12 +27,20 @@ function switchRoute(name) {
       return Job;
     case 'Pipeline':
       return Pipeline;
+    case 'Pipeline/Detail':
+      return PipelineDetail;
+    case 'Job/Detail':
+      return JobDetail;
     case 'Plugin':
       return Plugin;
     case 'Setting':
       return Setting;
     case 'Tutorial':
       return Tutorial;
+    case 'Tutorial/Mnist':
+      return Mnist;
+    case 'Tutorial/AssetsClassification':
+      return AssetsClassification;
     default:
       break;
   }
@@ -40,19 +49,8 @@ function switchRoute(name) {
 async function routeSetter(list, route) {
   const handler = list[route];
   if (typeof handler === 'string') {
-    // console.log('handler', handler);
-    // const LoadableComponent = Loadable({
-    //   // loader: () => import(`../pages/${handler}`),
-    //   loader: () => import(`../pages/Job`),
-    //   loading: Loading,
-    // });
-    // const m = await import(`../pages/${handler}`);
-    // const m = await import(`../pages/Job`);
-    // console.log(m);
     return {
       path: route,
-      // component: LoadableComponent,
-      // component: m?.default ? m.default : m,
       component: switchRoute(handler),
     };
   } else {

@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import { Layout as AntdLayout, Menu, Button, Divider } from 'antd';
 import { SettingOutlined, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
+
+import NewPipelineBox from '~/components/NewPipelineBox';
 
 import './index.less';
 
 const { Header, Content } = AntdLayout;
 
 export default function Layout(props) {
+
+  const [visible, setVisible] = useState(false);
 
   const menuClickHandle = (event) => {
     props.history.push(event.key);
@@ -39,9 +43,10 @@ export default function Layout(props) {
           <Button type="text" style={{ marginRight: '5px' }} icon={<SettingOutlined style={{ fontSize: '22px' }} />} onClick={goSetting} />
           <Button type="text" icon={<QuestionCircleOutlined style={{ fontSize: '22px' }} />} onClick={openHelp} />
           <Divider type="vertical" style={{ marginRight: 0 }} />
-          <Button type="text" style={{}} icon={<PlusOutlined />}>New Pipeline</Button>
+          <Button type="text" style={{}} icon={<PlusOutlined />} onClick={() => setVisible(true)}>New Pipeline</Button>
         </div>
       </Header>
+      <NewPipelineBox {...props} visible={visible} close={() => setVisible(false)} />
       <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
         <div className="site-layout-background">
           { props.children }
@@ -49,4 +54,4 @@ export default function Layout(props) {
       </Content>
     </AntdLayout>
   );
-};
+}

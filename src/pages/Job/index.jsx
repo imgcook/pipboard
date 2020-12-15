@@ -3,13 +3,6 @@ import { Link } from 'react-router-dom';
 import { Table, Modal, Tag, Button } from 'antd';
 import dayjs from 'dayjs';
 import { PipelineStatus } from '@pipcook/pipcook-core/dist/types/database';
-import {
-  CheckCircleOutlined,
-  SyncOutlined,
-  CloseCircleOutlined,
-  ClockCircleOutlined,
-  Loading3QuartersOutlined,
-} from '@ant-design/icons';
 
 import { job } from '../../common/service';
 
@@ -119,4 +112,4 @@ export default function Job() {
     columns={columns}
     dataSource={data}
   />;
-};
+}

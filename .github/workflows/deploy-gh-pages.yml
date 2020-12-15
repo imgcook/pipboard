@@ -11,7 +11,7 @@ jobs:
       MY_SECRET   : ${{secrets.commit_secret}}
       USER_NAME   : sirm2z
       USER_EMAIL  : sirm2zisv@gmail.com
-      PUBLISH_DIR : ./build
+      PUBLISH_DIR : ./dist
 
     runs-on: ubuntu-latest
 
@@ -27,8 +27,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install
       run: npm install
-    - name: npm run compile
-      run: npm run compile
+    - name: npm run build
+      run: npm run build
     - name: Commit files
       run: |
         cd $PUBLISH_DIR

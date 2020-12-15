@@ -1,15 +1,15 @@
 export default {
   "/tutorial": {
-    // "/mnist": "Tutorial/Mnist",
-    // "/assets-classification": "Tutorial/AssetsClassification",
+    "/mnist": "Tutorial/Mnist",
+    "/assets-classification": "Tutorial/AssetsClassification",
     "/": "Tutorial"
   },
   "/pipeline": {
-    // "/info": "Pipeline/Detail",
+    "/info": "Pipeline/Detail",
     "/": "Pipeline"
   },
   "/job": {
-    // "/info": "Job/Detail",
+    "/info": "Job/Detail",
     "/": "Job"
   },
   "/plugin": {
