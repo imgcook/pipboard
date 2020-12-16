@@ -53,7 +53,6 @@ export default function Mnist() {
     let prob = -1;
     const prediction = res.dataSync();
     // TODO NAN
-    console.log(prediction);
     Object.keys(prediction).forEach((key) => {
       if (prediction[key] > prob) {
         num = parseInt(key, 10);
