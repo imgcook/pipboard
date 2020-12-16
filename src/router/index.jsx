@@ -2,7 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 import path from 'path';
 
-import Layout from '~/layout1';
+import Layout from '~/layout';
 import routeConfig from './config';
 import Loading from '~/components/Loading';
 
