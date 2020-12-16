@@ -1,6 +1,7 @@
 import React from 'react';
-import Card from '@/components/Card';
-import './index.scss';
+
+import Card from '~/components/Card';
+import './index.less';
 
 const items = [{
   title: 'Tutorials',
@@ -17,7 +18,7 @@ const items = [{
 export default function Home (props) {
   return (
     <div className="home">
-      <Card items = {items.slice(0, 1)} {...props} />
+      <Card items = {items} {...props} />
     </div>
   );
 }

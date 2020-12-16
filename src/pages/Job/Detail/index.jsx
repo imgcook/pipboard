@@ -1,231 +1,185 @@
-import React, { Component } from 'react';
-import { Button, Timeline, Select, Divider, Tab, Icon, Affix, Form } from '@alifd/next';
-import queryString from 'query-string';
-import { PipelineStatus } from '@pipcook/pipcook-core/types/database';
+import React, { useEffect, useState } from 'react';
+import { Typography, Row, Col, Timeline, Select, Form, Button, Divider, Tabs } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
-import { getPipcook, createPluginsFromPipeline } from '@/utils/common';
-import { messageSuccess } from '@/utils/message';
-import { PLUGINS, pluginList } from '@/utils/config';
-import './index.scss';
+import { PLUGINS, pluginList } from '~/config';
+import { createPluginsFromPipeline, formatJSON } from '~/common/utils';
+import { job, pipeline } from '~/common/service';
+import useQuery from '~/hooks/useQuery';
 
-function formatJSON(str) {
-  return JSON.stringify(
-    JSON.parse(str),
-    null, 2,
-  );
-}
+import './index.less';
 
-export default class JobDetailPage extends Component {
+const { Title } = Typography;
+const { Option } = Select;
+const { TabPane } = Tabs;
 
-  pipcook = getPipcook()
+export default function JobDetail(props) {
 
-  state = {
-    plugins: {},
-    choices: pluginList,
-    pipelineId: null,
-    jobId: null,
-    job: {
-      stdout: '',
-      stderr: '',
-      evaluate: {
-        pass: null,
-        maps: null,
-      },
+  const { history } = props;
+
+  const [plugins, setPlugins] = useState({});
+  const [jobLog, setJobLog] = useState({
+    stdout: '',
+    stderr: '',
+    evaluate: {
+      pass: null,
+      maps: null,
     },
-  };
+  });
+  
+  const query = useQuery();
+  const queryJobId = query.get("jobId");
+  const queryTraceId = query.get("traceId");
 
-  async componentWillMount() {
-    const { jobId, traceId } = queryString.parse(location.hash.split('?')[1]);
-    const job = await this.pipcook.job.get(jobId);
-    const pipeline = await this.pipcook.pipeline.get(job.pipelineId);
+  const [pipelineId, setPipelineId] = useState("");
 
-    this.setState({
-      plugins: createPluginsFromPipeline(pipeline),
-      pipelineId: job.pipelineId,
-      jobId,
-    });
-
-    // TODO 0 1 5 轮询 2 3 4 结束
-    if (traceId && job.status < 2) {
-      this.listenJobState(traceId);
-    } else {
-      this.updateJobState();
-    }
-  }
-
-  updateJobState = async () => {
-    const { jobId } = this.state;
-    const job = await this.pipcook.job.get(jobId);
-    const logs = await this.pipcook.job.log(jobId);
+  const updateJobState = async (jobRes) => {
+    const logs = await job.log(queryJobId);
     if (!logs) {
       return;
     }
-    this.setState({
-      job: {
-        stdout: logs[0],
-        stderr: logs[1],
-        evaluate: {
-          pass: job.evaluatePass,
-          maps: formatJSON(job.evaluateMap),
-        },
-        dataset: formatJSON(job.dataset),
-        status: job.status,
+    setJobLog({
+      stdout: logs[0],
+      stderr: logs[1],
+      evaluate: {
+        pass: jobRes.evaluatePass,
+        maps: jobRes.evaluateMap ? formatJSON(jobRes.evaluateMap) : null,
       },
+      dataset: jobRes.dataset ? formatJSON(jobRes.dataset) : null,
+      status: jobRes.status,
     });
   }
 
-  listenJobState = async (id) => {
+  const listenJobState = async (id) => {
     try {
-      await this.pipcook.job.traceEvent(id, (event, msg) => {
-        const newJob = this.state.job;
+      await job.traceEvent(id, (event, msg) => {
         if (event === 'log') {
-          if (msg.level === 'info') {
-            newJob.stdout += `${msg.data}\n`;
-          } else if (msg.level === 'error') {
-            newJob.stderr += `${msg.data}\n`;
-          }
+          setJobLog(prev => ({
+            ...prev,
+            stdout: msg.level === 'info' ? `${prev.stdout}${msg.data}\n` : prev.stdout,
+            stderr: msg.level === 'error' ? `${prev.stderr}${msg.data}\n` : prev.stderr,
+          }))
         }
       });
     } catch (err) {
-      this.setState((prevState) => {
-        const job = prevState.job;
-        job.stderr += `${err.stack}\n`;
-        return { job };
-      });
+      setJobLog(prev => ({
+        ...prev,
+        stderr: `${prev.stderr}${err.stack}\n`,
+      }))
     }
   }
+  
+  useEffect(() => {
+    const init = async () => {
+      const jobRes = await job.get(queryJobId);
+      const pipelineRes = await pipeline.get(jobRes.pipelineId);
 
-  changeSelectPlugin = (itemName, value) => {
-    const { plugins } = this.state;
-    if (!value) {
-      delete plugins[itemName];
-    } else {
-      plugins[itemName] = {
-        package: value,
-        params: {},
-      };
-    }
-    this.setState({ plugins });
-  }
+      setPlugins(createPluginsFromPipeline(pipelineRes));
+      setPipelineId(jobRes.pipelineId);
 
-  updateParams = (event, selectType) => {
-    const { plugins } = this.state;
-    plugins[selectType].params = event.updated_src;
-    this.setState({ plugins });
-  }
-
-  downloadOutput = () => {
-    window.open(this.pipcook.job.getOutputDownloadURL(this.state.jobId));
-  }
-
-  restart = async () => {
-    // const { jobId } = this.state;
-    // await get('/job/restart', {
-    //   params: {
-    //     jobId, 
-    //     cwd: CWD,
-    //   },
-    // });
-    location.reload();
-  }
-
-  stop = async () => {
-    await get('/job/stop', {
-      params: { id: this.state.jobId },
-    });
-    messageSuccess('job is not running.');
-  }
-
-  render() {
-    const { job, plugins, choices } = this.state;
-    const renderJSONView = (json) => {
-      return <pre className="job-logview">{json}</pre>;
-    };
-    const renderTimelineItem = (title, extra) => {
-      const titleNode = <span className="plugin-choose-title">{title}</span>;
-      return <Timeline.Item  title={titleNode} {...extra} />;
-    };
-    const renderLogView = (logs) => {
-      return <pre className="job-logview">
-        {logs.replace(/\r/g, '\n')}
-        {job?.status === 1 && <Icon type="loading" />}
-      </pre>;
-    };
-    const renderSummary = (data) => {
-      try {
-        const resp = JSON.parse(data?.evaluate?.maps);
-        const view = <div style={{ marginTop: 30 }}>
-          <Form style={{width: '60%'}} labelCol={{ fixedSpan: 10 }}>
-            <Form.Item label="accuracy">
-              <p>{resp.accuracy.toPrecision(5)}</p>
-            </Form.Item>
-            <Form.Item label="loss">
-              <p>{resp.loss.toPrecision(5)}</p>
-            </Form.Item>
-          </Form>
-        </div>;
-        return view;
-      } catch (err) {
-        return renderJSONView(data?.evaluate?.maps);
+      // setJobRes(jobRes);
+      // TODO 0 1 5 轮询 2 3 4 结束
+      if (queryTraceId && jobRes.status < 2) {
+        listenJobState(queryTraceId);
+      } else {
+        updateJobState(jobRes);
       }
-    };
+    }
+    init();
+  }, [])
 
-    return (
-      <div className="job-info">
-        <div className="title-wrapper" >
-          <span className="title">job({this.state.jobId})</span>
-        </div>
-        <div className="content-wrapper">
-          <div className="plugin-choose">
-            <Affix offsetTop={70}>
-              <Timeline className="plugin-choose-timeline">
-                {
-                  PLUGINS.filter(({ id }) => {
-                    return choices[id] && plugins[id];
-                  }).map(({ id, title }) => {
-                    const name = plugins[id]?.name;
-                    const selectNode = <Select className="plugin-choose-selector" value={name} disabled>
-                      <Select.Option key={name} value={name}>{name}</Select.Option>
-                    </Select>;
-                    return renderTimelineItem(title, {
-                      key: id,
-                      state: 'done',
-                      content: selectNode,
-                    });
-                  })
-                }
-              </Timeline>
-              <Divider />
-              <div className="plugin-choose-actions">
-                <Button size="medium"
-                  type="secondary"
-                  onClick={() => {
-                    this.props.history.push(`/pipeline/info?pipelineId=${this.state.pipelineId}`);
-                  }}>View Pipeline</Button>
-                <Button size="medium" type="secondary"
-                  onClick={this.restart}>Restart</Button>
-                <Button size="medium" warning
-                  disabled={!job || job.status > PipelineStatus.RUNNING}
-                  onClick={this.stop}>Stop</Button>
-              </div>
-              <Divider />
-              <div className="plugin-choose-actions">
-                <Button size="medium"
-                  disabled={job?.status <= PipelineStatus.RUNNING}
-                  onClick={this.downloadOutput}>Download Output</Button>
-              </div>
-            </Affix>
-          </div>
-          <div className="job-outputs">
-            <Tab className="job-outputs-box">
-              <Tab.Item title="stdout">{renderLogView(job?.stdout)}</Tab.Item>
-              <Tab.Item title="stderr">{renderLogView(job?.stderr)}</Tab.Item>
-                <Tab.Item title="dataset">{renderJSONView(job?.dataset)}</Tab.Item>
-              <Tab.Item title="summary">{renderSummary(job)}</Tab.Item>
-            </Tab>
-          </div>
-        </div>
-      </div>
-    );
+  const goPipeline = () => {
+    history.push(`/pipeline/info?pipelineId=${pipelineId}`);
   }
+
+  const renderLogView = (logs) => {
+    return logs ? <pre className="job-logview">
+      {logs.replace(/\r/g, '\n')}
+      {jobLog?.status === 1 && <LoadingOutlined />}
+    </pre> : null;
+  }
+
+  const renderJSONView = (json) => {
+    return <pre className="job-logview">{json}</pre>;
+  }
+
+  const renderSummary = () => {
+    try {
+      const resp = JSON.parse(jobLog?.evaluate?.maps);
+      const view = <div style={{ marginTop: 30 }}>
+        <Form style={{width: '60%'}} labelCol={{ fixedSpan: 10 }}>
+          <Form.Item label="accuracy">
+            <p>{resp.accuracy.toPrecision(5)}</p>
+          </Form.Item>
+          <Form.Item label="loss">
+            <p>{resp.loss.toPrecision(5)}</p>
+          </Form.Item>
+        </Form>
+      </div>;
+      return view;
+    } catch (err) {
+      return renderJSONView(jobLog?.evaluate?.maps);
+    }
+  }
+
+  return <>
+    <Title level={3} style={{ marginBottom: 38 }}>Job({queryJobId})</Title>
+    <Row gutter={24}>
+      <Col span={8}>
+        <Timeline>
+          {
+            PLUGINS.filter(({ id }) => {
+              return pluginList[id] && plugins[id];
+            }).map(({ id, title }) => {
+              const name = plugins[id]?.name;
+              return (
+                <Timeline.Item color="gray" key={id}>
+                  <Title level={5} style={{ marginBottom: 12 }}>{title}</Title>
+                  <Select value={name} style={{ width: "100%" }} disabled>
+                    <Option key={name} value={name}>{name}</Option>
+                  </Select>
+                </Timeline.Item>
+              );
+            })
+          }
+        </Timeline>
+        <Divider />
+        <Row gutter={12}>
+          <Col span={8}>
+            <Button block onClick={goPipeline} style={{fontSize: '12px'}}>View Pipeline</Button>
+          </Col>
+          <Col span={8}>
+            <Button block onClick={() => location.reload()}>Restart</Button>
+          </Col>
+          <Col span={8}>
+            <Button block disabled>Stop</Button>
+          </Col>
+        </Row>
+        <Divider />
+        <Button
+          block
+          onClick={() => window.open(job.getOutputDownloadURL())}>
+          Download Output
+        </Button>
+      </Col>
+      <Col span={16}>
+        <div className="job-outputs">
+          <Tabs size="small">
+            <TabPane tab="stdout" key="1">
+              {renderLogView(jobLog?.stdout)}
+            </TabPane>
+            <TabPane tab="stderr" key="2">
+              {renderLogView(jobLog?.stderr)}
+            </TabPane>
+            <TabPane tab="dataset" key="3">
+              {renderJSONView(jobLog?.dataset)}
+            </TabPane>
+            <TabPane tab="summary" key="4">
+              {renderSummary()}
+            </TabPane>
+          </Tabs>
+        </div>
+      </Col>
+    </Row>
+  </>
 }

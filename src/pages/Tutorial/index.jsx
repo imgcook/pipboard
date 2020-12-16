@@ -1,6 +1,7 @@
-import React from 'react';
-import Card from '@/components/Card';
-import './index.scss';
+import React from "react";
+
+import Card from '~/components/Card';
+import './index.less';
 
 const items = [{
   title: 'MNIST Handwritten Digit Recognition',
@@ -14,10 +15,10 @@ const items = [{
   path: '/tutorial/assets-classification',
 }];
 
-export default function Home (props) {
+export default function Tutorial(props) {
   return (
     <div className="tutorial">
       <Card items = {items} {...props} />
     </div>
-  );
+  )
 }

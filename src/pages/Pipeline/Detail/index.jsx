@@ -1,341 +1,171 @@
-import React, { Fragment, Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Divider, Timeline, Select, List, Loading, Icon, Form, Input, NumberPicker, Card, Grid } from '@alifd/next';
-import queryString from 'query-string';
-// import ReactJson from 'react-json-view';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { Typography, Row, Col, Timeline, Select, Button, Divider, Card, message, Radio, List, Tag } from 'antd';
 
-import { getPipcook, createPluginsFromPipeline, formatPlugins2Update } from '@/utils/common';
-import { messageError, messageSuccess, messageLoading, messageHide } from '@/utils/message';
-import { PLUGINS, pluginList, PIPELINE_STATUS } from '@/utils/config';
-import './index.scss';
+import { formatPlugins2Update, createPluginsFromPipeline } from '~/common/utils';
+import { pipeline, plugin, job } from '~/common/service';
+import { PLUGINS, pluginList } from '~/config';
+import useQuery from '~/hooks/useQuery';
 
-export default class PipelineDetail extends Component {
+import './index.less';
 
-  pipcook = getPipcook()
+const { Title } = Typography;
+const { Option } = Select;
 
-  state = {
-    /**
-     * loading state.
-     */
-    loading: true,
-    /**
-     * plugins for current pipeline.
-     */
-    plugins: {},
-    /**
-     * jobs on the pipeline.
-     */
-    jobs: [],
-    /**
-     * available choices for plugins.
-     */
-    choices: pluginList,
-    /**
-     * pipelineId
-     */
-    pipelineId: null,
-    /**
-     * the plugin category by selected.
-     */
-    currentSelect: 'dataCollect',
-    /**
-     * the current plugin metadata.
-     */
-    currentPlugin: null,
-  }
+export default function Detail(props) {
 
-  async componentDidMount() {
-    const params = queryString.parse(location.hash.split('?')[1]);
-    if (params?.pipelineId) {
-      const id = params.pipelineId;
-      const pipeline = await this.pipcook.pipeline.get(id);
-      if (!pipeline) {
-        messageError('timeout to request the pipeline and plugins.');
-        this.setState({ loading: false });
-        return;
+  const { history } = props;
+
+  const queryPipelineId = useQuery().get("pipelineId");
+
+  const [radioChecked, setRadioChecked] = useState([])
+  const [jobs, setJobs] = useState([]);
+  const [plugins, setPlugins] = useState({});
+  const [currentPlugin, setCurrentPlugin] = useState({});
+
+  useEffect(() => {
+    async function initPlugins () {
+      if (queryPipelineId) {
+        const pipelineRes = await pipeline.get(queryPipelineId);
+        if (!pipelineRes) {
+          message.error('timeout to request the pipeline and plugins.');
+          return;
+        }
+        const plugins = createPluginsFromPipeline(pipelineRes);
+        setPlugins(plugins);
+
+        const radioChecked = PLUGINS.filter(({ id }) => {
+          return pluginList[id] && plugins[id];
+        }).map(({id}, i) => {
+          return {
+            item: plugins[id],
+            checked: i === 0
+          }
+        });
+        setRadioChecked(radioChecked);
+
+        // fetch the plugin data in async.
+        const metadata = await plugin.fetch(plugins['dataCollect']?.id);
+        setCurrentPlugin(metadata);
+        // fetch the jobs data in async. TODO
+        const jobs = await job.list({ pipelineId: queryPipelineId });
+        setJobs(jobs);
       }
-      const plugins = createPluginsFromPipeline(pipeline);
-      this.setState({
-        loading: false,
-        plugins,
-        pipelineId: params.pipelineId,
-      });
-
-      // fetch the jobs data in async.
-      this.selectPlugin();
-      this.fetchJobs(id);
     }
-  }
+    initPlugins();
+  }, []);
 
-  fetchJobs = async (id) => {
-    const jobs = await this.pipcook.job.list({ pipelineId: id });
-    this.setState({ jobs });
-  }
-
-  selectPlugin = async (category = this.state.currentSelect) => {
-    this.setState({ currentSelect: category });
-    const id = this.state.plugins[category]?.id;
-    const metadata = await this.pipcook.plugin.fetch(id);
-    this.setState({ currentSelect: category, currentPlugin: metadata });
-  }
-
-  changeSelectPlugin = (itemName, value) => {
-    const { plugins } = this.state;
-    if (!value) {
-      delete plugins[itemName];
-    } else {
-      plugins[itemName] = {
-        package: value,
-        params: {},
-      };
-    }
-    this.setState({plugins});
-  }
-
-  updateParams = (event, selectType) => {
-    const { plugins } = this.state;
-    plugins[selectType].params = event.updated_src;
-    this.setState({ plugins });
-  }
-
-  savePipeline = async (showMessage = true) => {
-    const { plugins, pipelineId } = this.state;
+  const savePipeline = async (showMessage = true) => {
     const pluginsForUpdate = formatPlugins2Update(plugins);
     try {
-      await this.pipcook.pipeline.update(pipelineId, { plugins: pluginsForUpdate });
+      await pipeline.update(queryPipelineId, { plugins: pluginsForUpdate });
       if (showMessage) {
-        messageSuccess('Update Pipeline Successfully');
+        message.success('Update Pipeline Successfully');
       }
     } catch (err) {
-      messageError('Update Pipeline failed');
+      message.error('Update Pipeline failed');
     }
   }
 
-  startJob = async () => {
-    const { pipelineId } = this.state;
-    await this.savePipeline(false);
+  const startJob = async () => {
+    await savePipeline(false);
 
-    messageLoading('installing plugins', 'installing');
-    const resp = await this.pipcook.pipeline.install(pipelineId);
-    await this.pipcook.pipeline.traceEvent(resp.traceId, (event, data) => {
+    const hide = message.loading('installing plugins', 0);
+    const resp = await pipeline.install(queryPipelineId);
+    await pipeline.traceEvent(resp.traceId, (event, data) => {
       console.info(event, data);
     });
 
-    messageHide();
-    const job = await this.pipcook.job.run(pipelineId);
-    this.props.history.push(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
+    hide();
+    const job = await job.run(queryPipelineId);
+    history.push(`/job/info?jobId=${job.id}&traceId=${job.traceId}`);
   }
 
-  deletePipeline = async () => {
-    // TODO
-    messageError('not supported');
+  const checkHandle = async (i) => {
+    setRadioChecked(radioChecked.map((itm, index) => ({
+      item: itm.item,
+      checked: i === index
+    })));
+    const id = radioChecked[i].item?.id;
+    const metadata = await plugin.fetch(id);
+    setCurrentPlugin(metadata);
   }
 
-  setVisible = () => {
-    const { logVisible } = this.state;
-    this.setState({logVisible: !logVisible});
-  }
-
-  renderPluginEditor(plugin) {
-    if (!plugin) {
-      return;
-    }
-    const paramsConfig = plugin.pipcook.params || [];
-    const { category } = plugin.pipcook;
-    const { plugins } = this.state;
-
-    const formItemLayout = {
-      labelCol: {
-        fixedSpan: 6,
-      },
-      wrapperCol: {
-        span: 16,
-      },
-    };
-
-    let author = plugin.author;
-    if (author?.name) {
-      author = author.name;
-      if (author?.email) {
-        author += `<${author.email}>`;
-      }
-    } else if (author?.email) {
-      author = author.email;
-    } else {
-      author = 'no author';
-    }
-
-    return <Fragment>
-      <Card free>
-        <Card.Header
-          title={plugin.name}
-          subTitle={author}
-          extra={<Button text type="primary">Repository</Button>}
-        />
-        <Card.Content>{plugin.description || 'no description'}</Card.Content>
-      </Card>,
-      <Form style={{ marginTop: 20 }} {...formItemLayout}>
-        {paramsConfig.map(({ name, type, description, defaultValue, ...config }) => {
-          let input = null;
-          const valueInState = plugins[category].params[name];
-          const createChangeHandler = (key = false) => {
-            return (val) => {
-              if (key !== false) {
-                plugins[category].params[name][key] = val;
-              } else {
-                plugins[category].params[name] = val;
-              }
-              this.setState({ plugins });
-            };
-          };
-
-          if (type === 'string') {
-            input = <Input
-              name={name}
-              placeholder="please enter a text"
-              value={valueInState}
-              defaultValue={defaultValue}
-              onChange={createChangeHandler()}
-            />;
-          } else if (type === 'number') {
-            input = <NumberPicker
-              value={valueInState}
-              defaultValue={defaultValue}
-              onChange={createChangeHandler()}
-            />;
-          } else {
-            const arrayMatch = type.match(/(number|string)\[(\d+)?\]/);
-            if (arrayMatch != null) {
-              if (arrayMatch[1] === 'number') {
-                const cols = [];
-                for (let i = 0; i < arrayMatch[2]; i++) {
-                  cols.push(
-                    <Grid.Col>
-                      <Form.Item>
-                        <NumberPicker
-                          style={{ width: '95%' }}
-                          value={valueInState[i]}
-                          onChange={createChangeHandler(i)}
-                        />
-                      </Form.Item>
-                    </Grid.Col>,
-                  );
-                }
-                input = <Grid.Row gutter={arrayMatch[2]}>{cols}</Grid.Row>;
-              } else if (arrayMatch[1] === 'string') {
-                const selectOpts = {
-                  hasClear: true,
-                  mode: 'multiple',
-                  defaultValue,
-                  value: valueInState,
-                  onChange: createChangeHandler(),
-                };
-                if (arrayMatch[2] === '1') {
-                  selectOpts.mode = 'single';
-                }
-                const options = config.options.map((opt) => {
-                  return <Select.Option key={opt} value={opt}>{opt}</Select.Option>;
-                });
-                input = <Select style={{width: '50%'}} {...selectOpts}>{options}</Select>;
-              }
-            }
-          }
-          const itemExtra = <span style={{ fontSize: 12, color: '#666' }}>{description}</span>;
-          return <Form.Item label={name} extra={itemExtra}>{input}</Form.Item>;
-        })}
-      </Form>,
-    </Fragment>;
-  }
-
-  render() {
-    const {
-      plugins,
-      choices,
-      jobs,
-      currentSelect,
-    } = this.state;
-
-    return (
-      <div className="pipeline-info">
-        <div className="title-wrapper" >
-          <span className="title">configuration</span>
-        </div>
-        <div className="content-wrapper">
-          <div className="plugin-choose">
-            {this.state.loading && <Loading className="plugin-choose-loading" tip="fetching pipeline..."  />}
-            <Timeline>
-              {
-                PLUGINS.filter(({ id }) => {
-                  return choices[id] && plugins[id];
-                }).map(({ id, title }) => {
-                  const plugin = plugins[id];
-                  const titleNode = <span className="plugin-choose-title" onClick={() => this.selectPlugin(id)}>{title}</span>;
-                  const selectNode = <Select className="plugin-choose-selector" defaultValue={plugin.name} hasClear>
-                    {choices[id].map((value) => <Select.Option key={value} value={value}>{value}</Select.Option>)}
-                    <Select.Option key={plugin.name} value={plugin.name}>{plugin.name}</Select.Option>
-                  </Select>;
-                  return <Timeline.Item
-                    key={id}
-                    title={titleNode}
-                    content={selectNode}
-                    state={currentSelect === id ? 'process' : 'done'} />;
-                })
-              }
-            </Timeline>
-            <Divider />
-            <div className="plugin-choose-actions">
-              <Button size="medium" type="secondary"
-                onClick={this.savePipeline}>Save</Button>
-              <Button size="medium" type="secondary"
-                onClick={this.startJob}>Start</Button>
-              <Button size="medium" warning disabled
-                onClick={this.deletePipeline}>Delete</Button>
-            </div>
-          </div>
-          <div className="plugin-config">
-            {this.renderPluginEditor(this.state.currentPlugin)}
-          </div>
-          <div className="plugin-operate">
-            <List className="plugin-operate-jobs" size="small" header={
-              <div className="plugin-operate-jobs-header">
-                Jobs({jobs.length})
-                <Select defaultValue="all" disabled>
-                  {PIPELINE_STATUS.map((status) => {
-                    return <Select.Option key={status} value={status}>{status}</Select.Option>;
-                  })}
-                  <Select.Option value="all">Select All</Select.Option>
+  return <>
+    <Title level={3} style={{ marginBottom: 38 }}>Configuration</Title>
+    <Row gutter={24}>
+      <Col span={6}>
+        <Timeline>
+          {
+            PLUGINS.filter(({ id }) => {
+              return pluginList[id] && plugins[id];
+            }).map(({ id, title }, index) => {
+              const pluginItm = plugins[id];
+              return <Timeline.Item key={id} dot={<Radio style={{marginRight: 0}} checked={radioChecked[index]?.checked} onChange={() => checkHandle(index)} />}>
+                <Title level={5} style={{ marginBottom: 12 }}>{title}</Title>
+                <Select allowClear defaultValue={pluginItm.name} style={{ width: "100%" }}>
+                  {pluginList[id].map((value) => <Option key={value} value={value}>{value}</Option>)}
+                  <Option key={pluginItm.name} value={pluginItm.name}>{pluginItm.name}</Option>
                 </Select>
-              </div>
-            }>
-              {jobs.map((job) => {
-                let description = '';
-                if (job.status === 0) {
-                  description = 'initializing the dataset';
-                } else if (job.status === 1) {
-                  description = 'running this pipeline...';
-                } else if (job.status === 2) {
-                  description = <div>
-                    <Icon type="success" size="small" />
-                    <Button size="small">download output</Button>
-                  </div>;
-                } else if (job.status === 3) {
-                  description = 'failed';
-                }
-                const titleNode = <Link
-                  to={{
-                    pathname: "/job/info",
-                    search: `?jobId=${job.id}`,
-                  }}
-                >
-                  {job.createdAt}
-                </Link>;
-                return <List.Item title={titleNode} key={job.id}>{description}</List.Item>;
-              })}
-            </List>
-          </div>
+              </Timeline.Item>;
+            })
+          }
+        </Timeline>
+        <Divider />
+        <Row gutter={12}>
+          <Col span={8}>
+            <Button onClick={savePipeline}>Save</Button>
+          </Col>
+          <Col span={8}>
+            <Button onClick={startJob}>Start</Button>
+          </Col>
+          <Col span={8}>
+            <Button disabled>Delete</Button>
+          </Col>
+        </Row>
+      </Col>
+      <Col span={8}>
+        <div className="plugin-config">
+          <Card
+            size="small"
+            title={currentPlugin.name}>
+            <p>{currentPlugin.description || 'no description'}</p>
+          </Card>
         </div>
-      </div>
-    );
-  }
-  
+      </Col>
+      <Col span={10}>
+        <Card
+          title={`Jobs(${jobs.length})`}
+          bordered={false}
+          style={{ width: '100%' }}>
+          <List
+            itemLayout="horizontal"
+            dataSource={jobs}
+            renderItem={item => {
+              let description = '';
+              if (job.status === 0) {
+                description = 'initializing the dataset';
+              } else if (job.status === 1) {
+                description = 'running this pipeline...';
+              } else if (job.status === 2) {
+                description = <div>
+                  <Tag icon={<CheckCircleOutlined />} color="success">success</Tag>
+                  <Button size="small">download output</Button>
+                </div>;
+              } else if (job.status === 3) {
+                description = 'failed';
+              }
+              return(<List.Item>
+                <List.Item.Meta
+                  title={<Link to={{ pathname: "/job/info", search: `?jobId=${item.id}` }}><Button type="link">{item.createdAt}</Button></Link>}
+                  description={description}
+                />
+              </List.Item>)
+            }}
+          />
+        </Card>
+      </Col>
+    </Row>
+  </>
 }
