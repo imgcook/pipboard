@@ -1,24 +1,26 @@
+import { lazy } from 'react';
+
 export default {
   "/tutorial": {
-    "/mnist": "Tutorial/Mnist",
-    "/assets-classification": "Tutorial/AssetsClassification",
-    "/": "Tutorial"
+    "/mnist": lazy(() => import('../pages/Tutorial/Mnist')),
+    "/assets-classification": lazy(() => import('../pages/Tutorial/AssetsClassification')),
+    "/": lazy(() => import('../pages/Tutorial'))
   },
   "/pipeline": {
-    "/info": "Pipeline/Detail",
-    "/": "Pipeline"
+    "/info": lazy(() => import('../pages/Pipeline/Detail')),
+    "/": lazy(() => import('../pages/Pipeline'))
   },
   "/job": {
-    "/info": "Job/Detail",
-    "/": "Job"
+    "/info": lazy(() => import('../pages/Job/Detail')),
+    "/": lazy(() => import('../pages/Job'))
   },
   "/plugin": {
-    "/": "Plugin"
+    "/": lazy(() => import('../pages/Plugin'))
   },
   "/setting": {
-    "/": "Setting"
+    "/": lazy(() => import('../pages/Setting'))
   },
   "/": {
-    "/": "Home"
+    "/": lazy(() => import('../pages/Home'))
   }
 }

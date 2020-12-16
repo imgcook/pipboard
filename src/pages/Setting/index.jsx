@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Tabs, Row, Button, Tag, Input, Form, Tooltip } from '@/layout/node_modules/antd';
+import { Typography, Tabs, Row, Button, Tag, Input, Form, Tooltip } from 'antd';
+
 import { getPipcook } from '~/common/service';
 
 const { Title, Text } = Typography;
