@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run prebuild && node scripts/server.js",
     "prebuild": "rimraf dist/ && rimraf .cache/",
-    "build": "parcel build src/index.html --no-source-maps",
+    "build": "parcel build src/index.html",
     "postbuild": "node ./scripts/injectAssets.js",
     "lint": "npm run test:eslint && npm run test:stylelint",
     "test:eslint": "eslint src/ --ext .js --ext .jsx",
