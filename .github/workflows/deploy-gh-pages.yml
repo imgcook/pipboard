@@ -29,6 +29,8 @@ jobs:
       run: npm install
     - name: npm run build
       run: npm run build
+    - name: Check CNAME file existence
+      run: cat $PUBLISH_DIR/CNAME
     - name: Commit files
       run: |
         cd $PUBLISH_DIR
