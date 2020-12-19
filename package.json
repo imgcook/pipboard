@@ -22,8 +22,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@ctrl/tinycolor": "^3.3.1",
     "@pipcook/pipcook-core": "^1.1.2",
-    "@pipcook/sdk": "beta",
+    "@pipcook/sdk": "^1.2.1-6fd0361-beta.0",
     "@tensorflow/tfjs": "1.7.0",
     "antd": "^4.8.5",
     "axios": "^0.18.1",
