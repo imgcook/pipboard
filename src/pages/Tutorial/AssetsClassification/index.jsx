@@ -5,6 +5,8 @@ import * as tf from '@tensorflow/tfjs';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { Typography, Button, message } from 'antd';
 
+import { assetsClassificationModelJson, assetsClassificationMeanJson } from 'src/config'
+
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/javascript/javascript';
@@ -104,8 +106,8 @@ export default function AssetsClassification() {
   useEffect(() => {
     const hide = message.loading('loading model from assetsClassification...');
     async function init() {
-      const model = await tf.loadGraphModel('/static/models/assetsClassification/model.json');
-      const means = (await axios.get('/static/models/assetsClassification/mean.json')).data;
+      const model = await tf.loadGraphModel(assetsClassificationModelJson);
+      const means = (await axios.get(assetsClassificationMeanJson)).data;
       modelRef.current = model;
       meansRef.current = means;
       hide();

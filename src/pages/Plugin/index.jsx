@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Select, Typography, List, Tag, Space, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { getPipcook } from '~/common/service';
+import { getPipcook } from 'src/common/service';
 import { PLUGINS } from '@pipcook/pipcook-core/dist/constants/plugins';
 
 const { Option } = Select;

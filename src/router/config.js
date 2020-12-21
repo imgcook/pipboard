@@ -1,26 +1,35 @@
-import { lazy } from 'react';
+import Mnist from 'src/pages/Tutorial/Mnist';
+import AssetsClassification from 'src/pages/Tutorial/AssetsClassification';
+import Tutorial from 'src/pages/Tutorial';
+import PipelineDetail from 'src/pages/Pipeline/Detail';
+import Pipeline from 'src/pages/Pipeline';
+import JobDetail from 'src/pages/Job/Detail';
+import Job from 'src/pages/Job';
+import Plugin from 'src/pages/Plugin';
+import Setting from 'src/pages/Setting';
+import Home from 'src/pages/Home';
 
 export default {
   "/tutorial": {
-    "/mnist": lazy(() => import('../pages/Tutorial/Mnist')),
-    "/assets-classification": lazy(() => import('../pages/Tutorial/AssetsClassification')),
-    "/": lazy(() => import('../pages/Tutorial'))
+    "/mnist": Mnist,
+    "/assets-classification": AssetsClassification,
+    "/": Tutorial
   },
   "/pipeline": {
-    "/info": lazy(() => import('../pages/Pipeline/Detail')),
-    "/": lazy(() => import('../pages/Pipeline'))
+    "/info": PipelineDetail,
+    "/": Pipeline
   },
   "/job": {
-    "/info": lazy(() => import('../pages/Job/Detail')),
-    "/": lazy(() => import('../pages/Job'))
+    "/info": JobDetail,
+    "/": Job
   },
   "/plugin": {
-    "/": lazy(() => import('../pages/Plugin'))
+    "/": Plugin
   },
   "/setting": {
-    "/": lazy(() => import('../pages/Setting'))
+    "/": Setting
   },
   "/": {
-    "/": lazy(() => import('../pages/Home'))
+    "/": Home
   }
 }

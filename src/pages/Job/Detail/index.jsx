@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Row, Col, Timeline, Select, Form, Button, Divider, Tabs } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { PLUGINS, pluginList } from '~/config';
-import { createPluginsFromPipeline, formatJSON } from '~/common/utils';
-import { job, pipeline } from '~/common/service';
-import useQuery from '~/hooks/useQuery';
+import { PLUGINS, pluginList } from 'src/config';
+import { createPluginsFromPipeline, formatJSON } from 'src/common/utils';
+import { job, pipeline } from 'src/common/service';
+import useQuery from 'src/hooks/useQuery';
 
 import './index.less';
 

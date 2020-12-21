@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, Row, Col, Card, Tag, Button } from 'antd';
 
-import { PIPELINE_TEMPLATES } from '~/config/index';
-import { pipeline } from '~/common/service';
+import { PIPELINE_TEMPLATES } from 'src/config/index';
+import { pipeline } from 'src/common/service';
 
 export default function NewPipelineBox({history, visible, close}) {
 

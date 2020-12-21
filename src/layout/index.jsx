@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Layout as AntdLayout, Menu, Button, Divider } from 'antd';
 import { SettingOutlined, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
-import NewPipelineBox from '~/components/NewPipelineBox';
+import NewPipelineBox from 'src/components/NewPipelineBox';
 
 import './index.less';
 

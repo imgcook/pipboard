@@ -1,6 +1,6 @@
 import React from "react";
 
-import Card from '~/components/Card';
+import Card from 'src/components/Card';
 import './index.less';
 
 const items = [{
