@@ -33,7 +33,7 @@ export default function Layout(props) {
           className="nav"
           mode="horizontal"
           onClick={menuClickHandle}
-          defaultSelectedKeys={[props.match.path.match(/^\/\w*/)[0] || 'home']}
+          defaultSelectedKeys={[props.match?.path ? props.match.path.match(/^\/\w*/)[0] : 'home']}
         >
           <Menu.Item key="/pipeline">Pipelines</Menu.Item>
           <Menu.Item key="/job">Jobs</Menu.Item>
