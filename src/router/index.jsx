@@ -36,7 +36,7 @@ export default function Router() {
 
   return (
     <HashRouter>
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Layout><Loading /></Layout>}>
         <Switch>
           {routes.map((route, id) => {
             const { component: RouteComponent, children, ...others } = route;
