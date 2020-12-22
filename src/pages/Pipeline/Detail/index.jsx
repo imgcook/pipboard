@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Typography, Row, Col, Timeline, Select, Button, Divider, Card, message, Radio, List, Tag } from 'antd';
 
-import { formatPlugins2Update, createPluginsFromPipeline } from '~/common/utils';
-import { pipeline, plugin, job } from '~/common/service';
-import { PLUGINS, pluginList } from '~/config';
-import useQuery from '~/hooks/useQuery';
+import { formatPlugins2Update, createPluginsFromPipeline } from 'src/common/utils';
+import { pipeline, plugin, job } from 'src/common/service';
+import { PLUGINS, pluginList } from 'src/config';
+import useQuery from 'src/hooks/useQuery';
 
 import './index.less';
 

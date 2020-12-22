@@ -151,4 +151,15 @@ const PLUGIN_LOCAL = {
 };
 
 // eslint-disable-next-line
-export const pluginList = process.env.DEV === 'TRUE' ? PLUGIN_LOCAL : PLUGIN_LIST;
+export const pluginList = process.env.DEV === 'true' ? PLUGIN_LOCAL : PLUGIN_LIST;
+
+const devPrefix = 'http://localhost:3000';
+const _assetsClassificationModelJsonProduction = '/static/models/assetsClassification/model.json';
+const _assetsClassificationMeanJsonProduction = '/static/models/assetsClassification/mean.json';
+const _mnistModelJson = '/static/models/mnist/model.json';
+// eslint-disable-next-line
+export const assetsClassificationModelJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationModelJsonProduction : _assetsClassificationModelJsonProduction;
+// eslint-disable-next-line
+export const assetsClassificationMeanJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationMeanJsonProduction : _assetsClassificationMeanJsonProduction;
+// eslint-disable-next-line
+export const mnistModelJson = process.env.DEV === 'true' ? devPrefix + _mnistModelJson : _mnistModelJson;

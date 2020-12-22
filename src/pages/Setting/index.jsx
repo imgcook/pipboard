@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Tabs, Row, Button, Tag, Input, Form, Tooltip } from 'antd';
 
-import { getPipcook } from '~/common/service';
+import { getPipcook } from 'src/common/service';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;

@@ -4,6 +4,8 @@ import { Typography, Button, message, Row, Col } from 'antd';
 import * as Jimp from 'jimp';
 import * as tf from '@tensorflow/tfjs';
 
+import { mnistModelJson } from 'src/config'
+
 import './index.less';
 
 const { Title } = Typography;
@@ -17,7 +19,7 @@ export default function Mnist() {
 
   useEffect(() => {
     async function init() {
-      const model = await tf.loadLayersModel('/static/models/mnist/model.json');
+      const model = await tf.loadLayersModel(mnistModelJson);
       modelRef.current = model;
     }
     init();

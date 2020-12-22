@@ -1,4 +1,3 @@
-const Bundler = require('parcel-bundler');
 const express = require('express');
 const http = require('http');
 
@@ -6,7 +5,7 @@ const { modulesOSSUrl } = require('./config');
 
 const { mnist, assetsClassification } = modulesOSSUrl;
 
-const PORT = process.env.PORT || 1234;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -19,6 +18,7 @@ app.get('/static/models/*', function(req, res) {
   } else if (originalUrl.includes('assetsClassification')) {
     targetPath = assetsClassification.find(item => item.includes(urlParam[urlParam.length -1]));
   }
+  res.setHeader('Access-Control-Allow-Origin', '*');
   if (targetPath) {
     http.get(targetPath, function(response) {
       var body = [];
@@ -39,7 +39,6 @@ app.get('/static/models/*', function(req, res) {
   }
 });
 
-const bundler = new Bundler('src/index.html');
-app.use(bundler.middleware());
-
-app.listen(Number(PORT));
+app.listen(Number(PORT), () => {
+  console.log(`🤘 server is listeing on ${PORT}`);
+});

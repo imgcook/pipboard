@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 
-import { pipeline } from '~/common/service';
+import { pipeline } from 'src/common/service';
 
 const columns = [
   {
