@@ -40,5 +40,5 @@ app.get('/static/models/*', function(req, res) {
 });
 
 app.listen(Number(PORT), () => {
-  console.log('🤘 server is listeing on ' + PORT);
+  console.log(`🤘 server is listeing on ${PORT}`);
 });

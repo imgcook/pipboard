@@ -10,26 +10,26 @@ import Setting from 'src/pages/Setting';
 import Home from 'src/pages/Home';
 
 export default {
-  "/tutorial": {
-    "/mnist": Mnist,
-    "/assets-classification": AssetsClassification,
-    "/": Tutorial
+  '/tutorial': {
+    '/mnist': Mnist,
+    '/assets-classification': AssetsClassification,
+    '/': Tutorial
   },
-  "/pipeline": {
-    "/info": PipelineDetail,
-    "/": Pipeline
+  '/pipeline': {
+    '/info': PipelineDetail,
+    '/': Pipeline
   },
-  "/job": {
-    "/info": JobDetail,
-    "/": Job
+  '/job': {
+    '/info': JobDetail,
+    '/': Job
   },
-  "/plugin": {
-    "/": Plugin
+  '/plugin': {
+    '/': Plugin
   },
-  "/setting": {
-    "/": Setting
+  '/setting': {
+    '/': Setting
   },
-  "/": {
-    "/": Home
+  '/': {
+    '/': Home
   }
 }
