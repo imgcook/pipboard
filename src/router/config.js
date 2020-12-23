@@ -1,6 +1,8 @@
 import Mnist from 'src/pages/Tutorial/Mnist';
 import AssetsClassification from 'src/pages/Tutorial/AssetsClassification';
 import Tutorial from 'src/pages/Tutorial';
+import WebcamImageClassification from 'src/pages/TeachableMachine/WebcamImageClassification';
+import TeachableMachine from 'src/pages/TeachableMachine';
 import PipelineDetail from 'src/pages/Pipeline/Detail';
 import Pipeline from 'src/pages/Pipeline';
 import JobDetail from 'src/pages/Job/Detail';
@@ -14,6 +16,10 @@ export default {
     '/mnist': Mnist,
     '/assets-classification': AssetsClassification,
     '/': Tutorial
+  },
+  '/teachableMachine': {
+    '/webcam-image-classification': WebcamImageClassification,
+    '/': TeachableMachine
   },
   '/pipeline': {
     '/info': PipelineDetail,

@@ -9,10 +9,10 @@ const items = [{
   description: 'Learn how to get started with Pipcook in tutorials',
   path: '/tutorial',
 }, {
-  title: 'Pipeline',
+  title: 'Teachable Machine',
   cover: 'https://img.alicdn.com/tfs/TB14AUOGNv1gK0jSZFFXXb0sXXa-715-400.jpg',
-  description: 'Integrating the machine learning Pipeline into your workflow',
-  path: '/pipeline',
+  description: 'Teachable Machine',
+  path: '/teachableMachine',
 }];
 
 export default function Home (props) {

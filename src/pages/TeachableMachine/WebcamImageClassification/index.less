@@ -1,0 +1,117 @@
+.webcamImageClassification {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 1450px;
+
+  .webcam-main {
+    flex: 1;
+
+    .data-col {
+      flex: 1;
+
+      .dataList {
+        width: 100%;
+        height: 100%;
+
+        .data-card {
+          width: 100%;
+
+          .webcam-data-left {
+            background-color: #E8F0FE;
+            box-sizing: border-box;
+            height: 430px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            .webcam-data-head {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              font-size: 16px;
+  
+              .webcam-data-title {
+                color: #1967D2;
+              }
+    
+              .webcam-data-close {
+                color: #1967D2;
+              }
+  
+            }
+  
+            .webcam-data-container {
+              width: 265px;
+              height: 265px;
+
+              video {
+                width: 265px;
+                height: 265px;
+              }
+            }
+          }
+
+          .webcam-data-right {
+            box-sizing: border-box;
+            height: 430px;
+            padding: 30px;
+
+            .webcam-data-canvas {
+              margin-top: 10px;
+              height: 300px;
+              overflow-y: scroll;
+            }
+          }
+
+          .webcam-canvas {
+            width: 58px;
+            height: 58px;
+            background-color: #333;
+            border-radius: 4px;
+          }
+
+          .webcam-opts {
+            display: flex;
+
+            .webcam-btn {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: space-evenly;
+              width: auto;
+              min-width: 72px;
+              outline: 0;
+              height: 58px;
+              background-color: #E8F0FE;
+              color: #1967D2;
+              border: 2px solid transparent;
+              border-radius: 4px;
+              font-size: 12px;
+              cursor: pointer;
+              margin-right: 5px;
+              font-weight: 500;
+          
+              &:hover {
+                background-color: #D2E3FC;
+              }
+            }
+
+            .webcam-datas {
+              width: 500px;
+              height: 58px;
+              display: flex;
+              flex-wrap: nowrap;
+              overflow-x: auto;
+
+              .webcam-canvas {
+                margin-right: 5px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
