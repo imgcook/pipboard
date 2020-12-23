@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Row, Col, Card, Space, Button, Typography, Collapse, List, Tooltip, InputNumber, Select } from 'antd'
+import { Row, Col, Card, Space, Button, Typography, Collapse, List, Tooltip, InputNumber, Select, message } from 'antd'
 import { PlusOutlined, VideoCameraOutlined, UploadOutlined, ExportOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 import './index.less';
@@ -16,7 +16,7 @@ const tiainingListConfig = [
   'Under the hood',
 ];
 
-export default function WebcamImageClassification (props) {
+export default function WebcamImageClassification () {
 
   const videoRef = useRef(null);
   const webcamStream = useRef(null);
@@ -71,7 +71,7 @@ export default function WebcamImageClassification (props) {
         console.log("An error occurred: " + err);
       });
     } else {
-
+      message.warning('Please wait for the video to load');
     }
   }
 
