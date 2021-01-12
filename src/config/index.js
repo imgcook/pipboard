@@ -154,12 +154,15 @@ const PLUGIN_LOCAL = {
 export const pluginList = process.env.DEV === 'true' ? PLUGIN_LOCAL : PLUGIN_LIST;
 
 const devPrefix = 'http://localhost:3000';
-const _assetsClassificationModelJsonProduction = '/static/models/assetsClassification/model.json';
-const _assetsClassificationMeanJsonProduction = '/static/models/assetsClassification/mean.json';
+const _assetsClassificationModelJson = '/static/models/assetsClassification/model.json';
+const _assetsClassificationMeanJson = '/static/models/assetsClassification/mean.json';
 const _mnistModelJson = '/static/models/mnist/model.json';
+const _mobilenetModelJson = '/static/models/mobilenet/model.json';
 // eslint-disable-next-line
-export const assetsClassificationModelJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationModelJsonProduction : _assetsClassificationModelJsonProduction;
+export const assetsClassificationModelJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationModelJson : _assetsClassificationModelJson;
 // eslint-disable-next-line
-export const assetsClassificationMeanJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationMeanJsonProduction : _assetsClassificationMeanJsonProduction;
+export const assetsClassificationMeanJson = process.env.DEV === 'true' ? devPrefix + _assetsClassificationMeanJson : _assetsClassificationMeanJson;
 // eslint-disable-next-line
 export const mnistModelJson = process.env.DEV === 'true' ? devPrefix + _mnistModelJson : _mnistModelJson;
+// eslint-disable-next-line
+export const mobilenetModelJson = process.env.DEV === 'true' ? devPrefix + _mobilenetModelJson : _mobilenetModelJson;

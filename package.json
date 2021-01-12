@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@antv/g2": "^4.1.6",
     "@pipcook/pipcook-core": "^1.1.2",
     "@pipcook/sdk": "^1.2.1-6fd0361-beta.0",
     "@tensorflow/tfjs": "1.7.0",
@@ -37,6 +38,7 @@
     "axios": "^0.18.1",
     "codemirror": "^5.52.2",
     "dayjs": "^1.9.6",
+    "highlight.js": "^10.5.0",
     "jimp": "^0.10.0",
     "less": "^3.12.2",
     "moment": "^2.22.1",

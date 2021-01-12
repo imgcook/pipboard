@@ -3,11 +3,25 @@
   display: flex;
   flex-direction: column;
   width: 1450px;
+  background-image: '';
 
   .webcam-main {
     flex: 1;
 
-    .data-col {
+    .content-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .left-col {
       flex: 1;
 
       .dataList {
@@ -58,23 +72,48 @@
             padding: 30px;
 
             .webcam-data-canvas {
+              display: flex;
+              flex-wrap: wrap;
               margin-top: 10px;
               height: 300px;
               overflow-y: scroll;
+              align-content: flex-start;
             }
           }
-
-          .webcam-canvas {
+          .webcam-canvas-img-wrap {
+            position: relative;
             width: 58px;
             height: 58px;
-            background-color: #333;
-            border-radius: 4px;
+            margin: 0 5px 5px 0;
+
+            &:hover {
+              .webcam-canvas-del {
+                display: block;
+              }
+            }
+
+            .webcam-canvas-del {
+              display: none;
+              position: absolute;
+              top: 5px;
+              left: 5px;
+              color: #fff;
+              font-size: 20px;
+            }
+
+            .webcam-canvas-img {
+              width: 58px;
+              height: 58px;
+              background-color: #333;
+              border-radius: 4px;
+            }
           }
 
           .webcam-opts {
             display: flex;
 
             .webcam-btn {
+              position: relative;
               display: flex;
               flex-direction: column;
               align-items: center;
@@ -95,6 +134,16 @@
               &:hover {
                 background-color: #d2e3fc;
               }
+
+              .upload-input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                opacity: 0;
+                cursor: pointer;
+              }
             }
 
             .webcam-datas {
@@ -103,6 +152,7 @@
               display: flex;
               flex-wrap: nowrap;
               overflow-x: auto;
+              overflow-y: hidden;
 
               .webcam-canvas {
                 margin-right: 5px;
@@ -110,7 +160,84 @@
             }
           }
         }
+
+        .data-card-title {
+          position: relative;
+
+          .data-card-title-input {
+            background-color: transparent;
+            border: none;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.5;
+            cursor: pointer;
+
+            &:hover {
+              color: #40a9ff;
+            }
+          }
+        }
+      }
+    }
+
+    .center-card {
+      width: 100%;
+    }
+
+    .right-col {
+
+      .predict-webcam-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .predict-progress-block {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        .predict-progress {
+          width: 100%;
+          height: 28px;
+          border-radius: 5px;
+          overflow: hidden;
+          position: relative;
+  
+          .predict-progress-line {
+            position: absolute;
+            height: 28px;
+            transition: width 0.3s;
+            line-height: 28px;
+            left: 0;
+            top: 0;
+            padding-right: 10px;
+            border-radius: 5px;
+            text-align: right;
+          }
+        }
+      }
+
+      .predict-result {
+        display: flex;
       }
     }
   }
+}
+
+.data-board-item-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.export-modal-p {
+  margin-bottom: 20px;
+}
+
+.export-modal-code {
+  margin-top: 10px;
+  height: 400px;
+  overflow-y: scroll;
 }

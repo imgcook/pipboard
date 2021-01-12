@@ -1,0 +1,38 @@
+.layout {
+  &&.ant-layout {
+    background-color: #fff;
+  }
+
+  .header {
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    border-bottom: 1px solid #f0f0f0;
+
+    .logo {
+      color: #455064;
+      margin-right: 24px;
+      font-size: 20px;
+    }
+  }
+
+  .site-layout {
+    display: flex;
+    flex-direction: column;
+
+    .site-layout-background {
+      padding: 24px;
+      margin: 16px 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-x: auto;
+
+      @media screen and (min-width: 1500px) {
+        align-items: center;
+      }
+    }
+  }
+}
