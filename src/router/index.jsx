@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Switch, Route } from 'react-router-dom';
-import path from 'path';
 
-import Layout from 'src/layout';
+import Layout from '~/layout/BaseLayout';
 import routeConfig from './config';
 
 function createRoutes(list) {
@@ -24,7 +23,6 @@ function routeSetter(list, route) {
     };
   }
 }
-
 
 export default function Router() {
   const [routes, setRoutes] = useState([]);
@@ -51,7 +49,7 @@ export default function Router() {
                           const { path: childPath, component } = routeChild;
                           return <Route
                             key={`${id}-${idx}`}
-                            path={childPath && path.join(route.path, childPath)}
+                            path={childPath && route.path + childPath}
                             component={component}
                           />;
                         })}

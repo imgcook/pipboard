@@ -11,15 +11,6 @@ const pullModels = () => {
   });
 }
 
-const copyFile = () => {
-  fs.copyFile(
-    path.resolve(process.cwd(), './scripts/CNAME'),
-    path.resolve(process.cwd(), './dist/CNAME'),
-    (err) => { if (err) { throw err } }
-  );
-}
-
 (() => {
   pullModels();
-  copyFile();
 })();
