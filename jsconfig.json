@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "jsx": "react",
     "paths": {
-      "src/*": ["src/*"],
+      "~/*": ["src/*"],
       "@pipcook/pipcook-core/*": ["./node_modules/@pipcook/pipcook-core/dist/*"]
     }
   }
