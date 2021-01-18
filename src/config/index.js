@@ -118,7 +118,7 @@ export const guideList = [
 ];
 
 const devPrefix = 'http://localhost:3000';
-const prodPrefix = 'https://cdn.jsdelivr.net/gh/imgcook/pipboard@1.0';
+const prodPrefix = 'https://cdn.jsdelivr.net/gh/imgcook/pipboard@1.1';
 const _mobilenetModelJson = '/static/models/mobilenet/model.json';
 
 // eslint-disable-next-line
