@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Space, Button, Typography, Tooltip, Divider, Drawer } from 'antd'
+import { Space, Button, Typography, Tooltip, Divider, Drawer } from 'antd';
 import { SwapOutlined } from '@ant-design/icons';
 
 import * as log from '~/common/log';
 import Tip from '~/components/Tip';
-import { accuracyInfo, lossInfo } from '~/config'
+import { accuracyInfo, lossInfo } from '~/config';
 
 import './index.less';
 
@@ -17,7 +17,7 @@ export default function TrainBoard ({visible, close, accChartRender, lossChartRe
   // switch train data board sides
   const onSwitchSidesHandle = () => {
     placement === 'right' ? setPlacement('left') : setPlacement('right');
-  }
+  };
 
   return (
     <Drawer
@@ -41,7 +41,7 @@ export default function TrainBoard ({visible, close, accChartRender, lossChartRe
           title={accuracyInfo.title}
           texts={accuracyInfo.texts}
           onAppear={() => {
-            log.exposure('webcamImageClassification', {flow_type: 'train_acc_info_exposure'})
+            log.exposure('webcamImageClassification', {flow_type: 'train_acc_info_exposure'});
           }}
         />
       </div>
@@ -53,7 +53,7 @@ export default function TrainBoard ({visible, close, accChartRender, lossChartRe
           title={lossInfo.title}
           texts={lossInfo.texts}
           onAppear={() => {
-            log.exposure('webcamImageClassification', {flow_type: 'train_loss_info_exposure'})
+            log.exposure('webcamImageClassification', {flow_type: 'train_loss_info_exposure'});
           }}
         />
       </div>

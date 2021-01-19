@@ -25,9 +25,15 @@ export const initData = [{
   isDelete: false,
 }];
 
+export const trainParamsInit = {
+  epochsVal: 30,
+  batchSizeVal: 16,
+  learningRateVal: 0.001,
+};
+
 export const modelParams = {
   loss: 'categoricalCrossentropy',
-  metrics: [ 'accuracy' ],
+  metrics: ['accuracy'],
   hiddenLayerUnits: 10,
 };
 
@@ -86,19 +92,19 @@ export const lossInfo = {
 export const predictClassColor = [
   {
     bgColor: '#FFECE2',
-    color: '#E67701'
+    color: '#E67701',
   },
   {
     bgColor: '#FFE9EC',
-    color: '#D84C6F'
+    color: '#D84C6F',
   },
   {
     bgColor: '#F1F0FF',
-    color: '#794AEF'
+    color: '#794AEF',
   },
   {
     bgColor: '#D2E3FC',
-    color: '#1967D2'
+    color: '#1967D2',
   },
 ];
 
@@ -118,7 +124,7 @@ export const guideList = [
 ];
 
 const devPrefix = 'http://localhost:3000';
-const prodPrefix = 'https://cdn.jsdelivr.net/gh/imgcook/pipboard@1.1';
+const prodPrefix = 'https://cdn.jsdelivr.net/gh/imgcook/pipboard@gh-pages';
 const _mobilenetModelJson = '/static/models/mobilenet/model.json';
 
 // eslint-disable-next-line

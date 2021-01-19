@@ -3,11 +3,11 @@ class UUID {
     this.chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
     this.LocalStorageKey = '__uuid';
     this.uuid = localStorage.getItem(this.LocalStorageKey) || [];
-    if (!Array.isArray(this.uuid)) return;
+    if (!Array.isArray(this.uuid)) {return;}
     radix = radix || this.chars.length;
     if (len) {
       // Compact form
-      for (let i = 0; i < len; i++) this.uuid[i] = this.chars[0 | Math.random()*radix];
+      for (let i = 0; i < len; i++) {this.uuid[i] = this.chars[0 | Math.random() * radix];}
     } else {
       // rfc4122, version 4 form
       let r;
@@ -19,7 +19,7 @@ class UUID {
       for (let i = 0; i < 36; i++) {
         if (!this.uuid[i]) {
           r = 0 | Math.random()*16;
-          this.uuid[i] = this.chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+          this.uuid[i] = this.chars[(i === 19) ? (r & 0x3) | 0x8 : r];
         }
       }
     }

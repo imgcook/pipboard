@@ -1,6 +1,6 @@
 import React from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Space, Tooltip, Typography } from 'antd'
+import { Space, Tooltip, Typography } from 'antd';
 
 import ApperDiv from '~/components/ApperDiv';
 
@@ -24,7 +24,7 @@ const Tip = (props) => {
     </>}>
       <QuestionCircleOutlined style={{color: 'rgba(0,0,0,.45)', fontSize: '20px'}} />
     </Tooltip>
-  )
-}
+  );
+};
 
 export default Tip;

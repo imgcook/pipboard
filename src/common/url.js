@@ -6,7 +6,7 @@ class URL {
       hrefsplit[1].split('&').forEach((item) => {
         const query = item.split('=');
         query.length === 2 && (this.params[query[0]] = query[1]);
-      })
+      });
     }
   }
   get(key) {

@@ -8,8 +8,8 @@ export default function ApperDiv ({style, onAppear, children}) {
     ref.current && ref.current.addEventListener('appear', onAppear);
     return () => {
       ref.current && ref.current.removeEventListener('appear', onAppear);
-    }
-  }, [onAppear])
+    };
+  }, [onAppear]);
 
   return (
     <div className="appear-div" style={style} ref={ref}>

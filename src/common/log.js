@@ -6,21 +6,23 @@ const gkey = '/pipcook.pipboard';
 /**
  * transform object to string: key=value&key=value
  * @param {object} params {key: value}
+ * @return {string} key=value&key=value
  */
 const paramsToString = (params = {}) => {
   const urlSearchParams = [];
   for (let k in params) {
-    if (k.indexOf('$') === 0) continue;
+    if (k.indexOf('$') === 0) {continue;}
     urlSearchParams.push(k + '=' + params[k]);
   }
   return urlSearchParams.join('&');
-}
+};
 
 /**
  * log func
  * @param {string} key log key
  * @param {string} goKey log gokey
  * @param {string} type log type: EXP/OTHER/CLK
+ * @return {undefined}
  */
 const log = (key, goKey, type) => {
   const params = Object.assign(goKey, {
@@ -35,6 +37,7 @@ const log = (key, goKey, type) => {
  * exposure log
  * @param {string} key log key
  * @param {object} goKey log params
+ * @return {undefined}
  */
 export const exposure = (key, goKey) => {
   log(key, goKey, 'EXP');
@@ -44,6 +47,7 @@ export const exposure = (key, goKey) => {
  * click log
  * @param {string} key log key
  * @param {object} goKey log params
+ * @return {undefined}
  */
 export const click = (key, goKey) => {
   log(key, goKey, 'CLK');
@@ -53,6 +57,7 @@ export const click = (key, goKey) => {
  * other log
  * @param {string} key log key
  * @param {object} goKey log params
+ * @return {undefined}
  */
 export const other = (key, goKey) => {
   log(key, goKey, 'OTHER');
