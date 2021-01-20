@@ -12,6 +12,20 @@
   },
   "rules": {
     "react/prop-types": 0,
-    "react/display-name": 0
+    "react/display-name": 0,
+    "max-len": [1, 200],
+    "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
+    "array-bracket-spacing": [2, "never"],
+    "comma-dangle": [2, "always-multiline"],
+    "eqeqeq": [2, "allow-null"],
+    "curly": "error",
+    "valid-jsdoc": 1,
+    "no-alert": 0,
+    "no-irregular-whitespace": 2,
+    "no-dupe-keys": 2,
+    "no-dupe-args": 2,
+    "no-debugger": 2,
+    "no-console": 0,
+    "semi": 2
   }
 }

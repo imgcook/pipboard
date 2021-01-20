@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Chart } from '@antv/g2';
-import { Row, Col, Card, Space, Button, Typography, Collapse, List, InputNumber, Select, message, Divider, notification, Spin } from 'antd'
+import { Row, Col, Card, Space, Button, Typography, Collapse, List, InputNumber, Select, message, Divider, notification, Spin } from 'antd';
 import { PlusOutlined, VideoCameraOutlined, UploadOutlined, ExportOutlined, CloseOutlined, DeleteOutlined, RedoOutlined, BarChartOutlined } from '@ant-design/icons';
 import * as tf from '@tensorflow/tfjs';
 
 import * as log from '~/common/log';
-import Tip from '~/components/Tip'
+import Tip from '~/components/Tip';
 import TrainBoard from '~/components/TrainBoard';
 import ExportModal from '~/components/ExportModal';
 import ModelLoading from '~/components/ModelLoading';
-import { canvasStyle, initData, modelParams, trainParams, predictClassColor, mobilenetModelJson } from '~/config';
+import { canvasStyle, initData, modelParams, trainParams, predictClassColor, mobilenetModelJson, trainParamsInit } from '~/config';
 import { js } from '~/common/template';
 
 import './index.less';
@@ -40,9 +40,9 @@ export default function WebcamImageClassification () {
   const [trainProgress, setTrainProgress] = useState(0);
   const trainImgDatasetRef = useRef(null);
   const trainImgClassRef = useRef(null);
-  const [epochsVal, setEpochsVal] = useState(50);
-  const [batchSizeVal, setBatchSizeVal] = useState(16);
-  const [learningRateVal, setLearningRateVal] = useState(0.001);
+  const [epochsVal, setEpochsVal] = useState(trainParamsInit.epochsVal);
+  const [batchSizeVal, setBatchSizeVal] = useState(trainParamsInit.batchSizeVal);
+  const [learningRateVal, setLearningRateVal] = useState(trainParamsInit.learningRateVal);
   const [dataBoardVisible, setDataBoardVisible] = useState(false);
   const accChartRef = useRef(null);
   const accChartDataRef = useRef([]);
@@ -72,18 +72,18 @@ export default function WebcamImageClassification () {
       const layer = mobilenetRef.current.getLayer('conv_pw_13_relu');
       const truncatedMobilenet = tf.model({
         inputs: mobilenetRef.current.inputs,
-        outputs: layer.output
+        outputs: layer.output,
       });
       for (const _layer of truncatedMobilenet.layers) {
         _layer.trainable = false;
       }
       modelPreRef.current.add(truncatedMobilenet);
       modelPreRef.current.add(tf.layers.flatten({
-        inputShape: layer.outputShape.slice(1)
+        inputShape: layer.outputShape.slice(1),
       }));
       modelPreRef.current.add(tf.layers.dense({
         units: modelParams.hiddenLayerUnits,
-        activation: 'relu'
+        activation: 'relu',
       }));
 
       videoRef.current = document.createElement('video');
@@ -99,8 +99,8 @@ export default function WebcamImageClassification () {
     return () => {
       clearTimeout(predictTimer);
       clearTimeout(takepictureTimer);
-    }
-  }, [])
+    };
+  }, []);
 
   // define a model
   const varModel = () => {
@@ -110,54 +110,53 @@ export default function WebcamImageClassification () {
     log.other('webcamImageClassification', {flow_type: 'data_class_num', value: units});
     modelRef.current.add(tf.layers.dense({
       units,
-      activation: 'softmax'
+      activation: 'softmax',
     }));
     modelRef.current.compile({
       optimizer: tf.train.adam(learningRateVal),
       loss: modelParams.loss,
-      metrics: modelParams.metrics
+      metrics: modelParams.metrics,
     });
-  }
+  };
 
   // export a model
   const onExportModelHandle = async () => {
     log.click('webcamImageClassification', {flow_type: 'model_download_btn_click'});
-    const saveResult = await modelRef.current.save('downloads://model');
-    console.log('saveResult', saveResult);
-  }
+    await modelRef.current.save('downloads://model');
+  };
 
   // train
   // train params epochs
   const onEpochsChangeHandle = (val) => {
     log.other('webcamImageClassification', {flow_type: 'train_epoch_change'});
     setEpochsVal(val);
-  }
+  };
 
   // train params banch size
   const onBanchSizeChangeHandle = (val) => {
     log.other('webcamImageClassification', {flow_type: 'train_batch_size_change'});
     setBatchSizeVal(parseInt(val));
-  }
+  };
 
   // train params learning rate
   const onLearningRateChangeHandle = (val) => {
     log.other('webcamImageClassification', {flow_type: 'train_learning_rate_change'});
     setLearningRateVal(val);
-  }
+  };
 
   // reset train params
   const onResetTrainParamsHandle = () => {
     log.click('webcamImageClassification', {flow_type: 'train_reset_click'});
-    setEpochsVal(50);
-    setBatchSizeVal(16);
-    setLearningRateVal(0.001);
-  }
+    setEpochsVal(trainParamsInit.epochsVal);
+    setBatchSizeVal(trainParamsInit.batchSizeVal);
+    setLearningRateVal(trainParamsInit.learningRateVal);
+  };
 
   // open data board
   const onOpenBoardHandle = () => {
     log.click('webcamImageClassification', {flow_type: 'train_open_board_click'});
     setDataBoardVisible(true);
-  }
+  };
 
   // set train status to start train
   const onTrainHandle = () => {
@@ -169,7 +168,7 @@ export default function WebcamImageClassification () {
       if (item.imgData.length === 0) {
         notification.warning({
           message: 'Data Warning',
-          description: `"${item.imgClassTitle}" requires at least 1 sample. Click "Add Samples" below to begin.`
+          description: `"${item.imgClassTitle}" requires at least 1 sample. Click "Add Samples" below to begin.`,
         });
         return;
       }
@@ -180,7 +179,7 @@ export default function WebcamImageClassification () {
       return Object.assign(item, {
         isPredict: true,
       });
-    })
+    });
     setData(dataRef.current);
     trainImgDatasetRef.current = imgDataset;
     trainImgClassRef.current = imgClass;
@@ -191,7 +190,7 @@ export default function WebcamImageClassification () {
     setTimeout(() => {
       trainModel();
     }, 300);
-  }
+  };
 
   // define a data board
   const varDataBoard = (name, dom, data, min, max, tick) => {
@@ -212,13 +211,13 @@ export default function WebcamImageClassification () {
         alias: 'Epoch',
         nice: true,
         type: 'cat',
-      }
+      },
     });
     dataBoard.axis('data', { title: {} });
     dataBoard.axis('epoch', { title: {} });
     dataBoard.line().position('epoch*data');
     return dataBoard;
-  }
+  };
 
   // start train model
   const trainModel = async () => {
@@ -255,7 +254,7 @@ export default function WebcamImageClassification () {
     setPredictStatus(false);
     setTrainStatus(false);
     startPredict();
-  }
+  };
 
   // predict
   // start predict depend predict status
@@ -263,7 +262,6 @@ export default function WebcamImageClassification () {
     const predictLoop = async () => {
       const img = await webcamRef.current.capture();
       const predictRes = await modelRef.current.predict(tf.stack([img])).array();
-      // console.log('predictRes', predictRes[0][0], predictRes[0][1]);
       setPredictResult(predictRes[0]);
 
       // Dispose the tensor to release the memory.
@@ -272,7 +270,7 @@ export default function WebcamImageClassification () {
         clearTimeout(predictTimer);
         predictStatus && await predictLoop();
       }, 300);
-    }
+    };
 
     (async() => {
       if (predictStatus) {
@@ -281,23 +279,23 @@ export default function WebcamImageClassification () {
         webcamRef.current = await tf.data.webcam(videoRef.current);
         predictLoop();
       }
-    })()
-    
+    })();
+
     return () => {
       clearTimeout(predictTimer);
-    }
-  }, [predictStatus])
+    };
+  }, [predictStatus]);
 
   // set predict status to start predict
   const startPredict = async () => {
     setPredictStatus(true);
-  }
+  };
 
   // open export modal
   const onOpenExportModalHandle = () => {
     log.click('webcamImageClassification', {flow_type: 'train_open_board_click'});
     setExportModalVisible(true);
-  }
+  };
 
   // data
   // class card add
@@ -313,30 +311,29 @@ export default function WebcamImageClassification () {
     });
     setData(dataRef.current);
     classRef.current++;
-  }
+  };
 
   // filter data by isPredict & isDelete
   const filterPredictData = () => {
     return dataRef.current.filter(item => item.isPredict && !item.isDelete);
-  }
+  };
 
-  // 
+  // get class array
   const getClassArray = () => {
     return filterPredictData().map(item => ({
-      title: item.imgClassTitle
-    }))
-  }
+      title: item.imgClassTitle,
+    }));
+  };
 
   // edit card class name
   const onCardClassEdit = (val, index) => {
-    console.log(val);
     dataRef.current = dataRef.current.map((item, i) => {
       return i === index ? Object.assign(item, {
         imgClassTitle: val,
       }) : item;
     });
     setData(dataRef.current);
-  }
+  };
 
   // delete card
   const onDeleteCardHandle = (i) => {
@@ -344,26 +341,26 @@ export default function WebcamImageClassification () {
     dataRef.current[i].imgDataset.map(item => item.dispose());
     dataRef.current = dataRef.current.map((item, index) => i === index ? Object.assign(item, {isDelete: true}) : item);
     setData(dataRef.current);
-  }
+  };
 
   // delete img of data
   const onDelImgHandle = (index, idx) => {
     log.click('webcamImageClassification', {flow_type: 'data_picture_delete_click'});
     dataRef.current = dataRef.current.map((item, i) => {
-      item.imgDataset.slice(idx, 1)[0].dispose();
       if (i === index) {
+        item.imgDataset.slice(idx, 1)[0].dispose();
         return Object.assign(
           item,
           {
             imgData: item.imgData.slice(0, idx).concat(item.imgData.slice(idx + 1)),
-            imgDataset: item.imgDataset.slice(0, idx).concat(item.imgDataset.slice(idx + 1))
+            imgDataset: item.imgDataset.slice(0, idx).concat(item.imgDataset.slice(idx + 1)),
           }
-        )
+        );
       }
       return item;
     });
     setData(dataRef.current);
-  }
+  };
 
   // upload
   const onUploadHandle = async (event, index) => {
@@ -373,36 +370,29 @@ export default function WebcamImageClassification () {
     let len = event.currentTarget.files.length;
 
     const updateData = () => {
-      console.log('imgData', imgData);
-      console.log('imgDataset', imgDataset);
-
       dataRef.current = dataRef.current.map((item, idx) => idx === index ? 
         Object.assign(item, {
           imgData: imgData.concat(item.imgData),
           imgDataset: imgDataset.concat(item.imgDataset),
         }) : item
       );
-      console.log('dataref', dataRef.current[index]);
       setData(dataRef.current);
     };
-
-    event.currentTarget.files?.forEach((item) => {
+    
+    Array.from(event.currentTarget.files).forEach((item) => {
       const src = URL.createObjectURL(item);
-      // const image = document.createElement('img');
       const image = new Image();
       image.src = src;
       image.onload = function() {
-        console.log('width', this.width);
-        console.log('height', this.height);
         image.width = this.width;
         image.height = this.height;
         imgDataset.push(tf.image.resizeBilinear(tf.browser.fromPixels(image), [canvasStyle.width, canvasStyle.height]));
         --len === 0 && updateData();
-      }
+      };
       imgData.push(src);
     });
     event.target.value = null;
-  }
+  };
 
   // webcam
   // open webcam of card
@@ -419,22 +409,22 @@ export default function WebcamImageClassification () {
     } else {
       message.warning('Please wait for the video to load');
     }
-  }
+  };
 
   // close webcam
   const onCloseWebcamHandle = () => {
     log.click('webcamImageClassification', {flow_type: 'data_takepicture_close_click'});
     removeVideo();
-    webcamRef.current.stop();
+    webcamRef.current?.stop && webcamRef.current.stop();
     setWebcamSwitchIndex(-1);
-  }
+  };
 
   // remove video element from parent
   const removeVideo = () => {
     if (videoRef.current.parentElement) {
       videoRef.current.parentElement.removeChild(videoRef.current);
     }
-  }
+  };
 
   // take picture when hold button
   const onTakepictureHandle = async (i) => {
@@ -453,12 +443,14 @@ export default function WebcamImageClassification () {
       setData(dataRef.current);
       onTakepictureHandle(i);
     }, 20);
-  }
+  };
 
   // stop take picture
   const onClearTakepictureHandle = () => {
     clearTimeout(takepictureTimer);
-  }
+  };
+
+  console.log('data', data[0].imgClassTitle);
 
   return (
     <div className="webcamImageClassification">
@@ -482,7 +474,7 @@ export default function WebcamImageClassification () {
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => onCardClassEdit(e.target.value, index)} />
                     </div>}
-                    extra={<Button type="link" onClick={() => {onDeleteCardHandle(index)}}>删除</Button>}>
+                    extra={<Button type="link" onClick={() => {onDeleteCardHandle(index);}}>删除</Button>}>
                     <div style={{display: index === webcamSwitchIndex ? 'block' : 'none'}}>
                       <Row>
                         <Col span={12} className="webcam-data-left">
@@ -495,10 +487,10 @@ export default function WebcamImageClassification () {
                             <Button
                               type="primary"
                               // touch
-                              onTouchStart={() => {onTakepictureHandle(index)}}
+                              onTouchStart={() => {onTakepictureHandle(index);}}
                               onTouchEnd={onClearTakepictureHandle}
                               // mouse
-                              onMouseDown={() => {onTakepictureHandle(index)}}
+                              onMouseDown={() => {onTakepictureHandle(index);}}
                               onTouchCancel={onClearTakepictureHandle}
                               onMouseLeave={onClearTakepictureHandle}
                               onMouseOut={onClearTakepictureHandle}
@@ -532,7 +524,7 @@ export default function WebcamImageClassification () {
                         : <p>添加图像样本：</p>
                       }
                       <div className="webcam-opts">
-                        <button className="webcam-btn" onClick={() => {onOpenWebcamHandle(index)}}>
+                        <button className="webcam-btn" onClick={() => {onOpenWebcamHandle(index);}}>
                           <VideoCameraOutlined style={{fontSize: '24px'}} />
                           <span>摄像头</span>
                         </button>
@@ -543,7 +535,7 @@ export default function WebcamImageClassification () {
                             multiple={true}
                             className="upload-input"
                             type="file" accept="image/jpg, image/jpeg, image/png"
-                            onChange={(e) => {onUploadHandle(e, index)}} />
+                            onChange={(e) => {onUploadHandle(e, index);}} />
                         </button>
                         <div className="webcam-datas">
                           {
@@ -600,7 +592,7 @@ export default function WebcamImageClassification () {
                           title={item.type}
                           texts={item.texts}
                           onAppear={() => {
-                            log.exposure('webcamImageClassification', {flow_type: 'train_epoch_info_exposure'})
+                            log.exposure('webcamImageClassification', {flow_type: 'train_epoch_info_exposure'});
                           }}
                         />
                       }>
@@ -608,15 +600,14 @@ export default function WebcamImageClassification () {
                           <Text strong>{item.title}:</Text>
                           <InputNumber style={{width: '54px'}} min={1} max={1000} defaultValue={epochsVal} value={epochsVal} onChange={onEpochsChangeHandle} />
                         </Space>
-                      </List.Item>)
-                    }
-                    else if (item.type === 'Batch Size') {
+                      </List.Item>);
+                    } else if (item.type === 'Batch Size') {
                       return (<List.Item extra={
                         <Tip
                           title={item.type}
                           texts={item.texts}
                           onAppear={() => {
-                            log.exposure('webcamImageClassification', {flow_type: 'train_batch_size_info_exposure'})
+                            log.exposure('webcamImageClassification', {flow_type: 'train_batch_size_info_exposure'});
                           }}
                         />
                       }>
@@ -631,15 +622,14 @@ export default function WebcamImageClassification () {
                             <Option value="512">512</Option>
                           </Select>
                         </Space>
-                      </List.Item>)
-                    }
-                    else if (item.type === 'Learning Rate') {
+                      </List.Item>);
+                    } else if (item.type === 'Learning Rate') {
                       return (<List.Item extra={
                         <Tip
                           title={item.type}
                           texts={item.texts}
                           onAppear={() => {
-                            log.exposure('webcamImageClassification', {flow_type: 'train_learning_rate_info_exposure'})
+                            log.exposure('webcamImageClassification', {flow_type: 'train_learning_rate_info_exposure'});
                           }}
                         />
                       }>
@@ -647,17 +637,15 @@ export default function WebcamImageClassification () {
                           <Text strong>{item.title}:</Text>
                           <InputNumber style={{minWidth: '54px'}} min={0.00001} max={0.99999} value={learningRateVal} step={0.00001} onChange={onLearningRateChangeHandle} />
                         </Space>
-                      </List.Item>)
-                    }
-                    else if (item.type === 'Reset Defaults') {
+                      </List.Item>);
+                    } else if (item.type === 'Reset Defaults') {
                       return (<List.Item>
                         <Button block icon={<RedoOutlined />} onClick={onResetTrainParamsHandle}>{item.title}</Button>
-                      </List.Item>)
-                    }
-                    else if (item.type === 'Under the hood') {
+                      </List.Item>);
+                    } else if (item.type === 'Under the hood') {
                       return (<List.Item>
                         <Button block icon={<BarChartOutlined />} onClick={onOpenBoardHandle}>{item.title}</Button>
-                      </List.Item>)
+                      </List.Item>);
                     }
                   }}
                 />
@@ -700,7 +688,7 @@ export default function WebcamImageClassification () {
       </Row>
       <TrainBoard
         visible={dataBoardVisible}
-        close={() => {setDataBoardVisible(false)}}
+        close={() => {setDataBoardVisible(false);}}
         accChartRender={() => <div className="data-board-acc-chart" ref={accChartRef}></div>}
         lossChartRender={() => <div className="data-board-loss-chart" ref={lossChartRef}></div>}
       />

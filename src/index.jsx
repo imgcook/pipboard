@@ -7,6 +7,6 @@ import "antd/dist/antd.css";
 import Router from './router';
 import './index.less';
 
-if (window) {setupAppear()}
+if (window) {setupAppear();}
 
 ReactDOM.render(<Router />, document.getElementById('app'));

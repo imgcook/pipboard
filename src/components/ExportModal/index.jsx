@@ -1,5 +1,5 @@
 import React from 'react';
-import { Space, Button, Typography, Modal } from 'antd'
+import { Space, Button, Typography, Modal } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 
 import * as log from '~/common/log';
@@ -43,7 +43,7 @@ export default function ExportModal ({visible, close, exportModel, code}) {
                 type="link"
                 href={item.link}
                 onClick={() => {
-                  log.click('webcamImageClassification', {flow_type: 'guide_link_btn_click'})
+                  log.click('webcamImageClassification', {flow_type: 'guide_link_btn_click'});
                 }}
               >{item.title}</Button>
             ))

@@ -2,7 +2,7 @@ import React, {useRef, useEffect} from 'react';
 import hljs from 'highlight.js';
 import javascript from 'highlight.js/lib/languages/javascript';
 import 'highlight.js/styles/atelier-savanna-light.css';
-hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('javascript', javascript);
 
 const Highlighter = (props) => {
 
@@ -18,7 +18,7 @@ const Highlighter = (props) => {
         {props.children}
       </code>
     </pre>
-  )
-}
+  );
+};
 
 export default Highlighter;

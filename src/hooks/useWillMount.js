@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef } from 'react';
 
 const useWillMount = (cb) => {
   const ref = useRef(false);
