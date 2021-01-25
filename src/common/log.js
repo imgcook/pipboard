@@ -30,7 +30,10 @@ const log = (key, goKey, type) => {
     spm: url.get('spm'),
     t: +new Date(),
   });
-  window.goldlog?.record && window.goldlog.record(`${gkey}.${key}`, type, paramsToString(params), 'GET');
+  // eslint-disable-next-line
+  if (process.env.NODE_ENV === 'production') {
+    window.goldlog?.record && window.goldlog.record(`${gkey}.${key}`, type, paramsToString(params), 'GET');
+  }
 };
 
 /**

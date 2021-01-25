@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Chart } from '@antv/g2';
 import { Row, Col, Card, Space, Button, Typography, Collapse, List, InputNumber, Select, message, Divider, notification, Spin } from 'antd';
-import { PlusOutlined, VideoCameraOutlined, UploadOutlined, ExportOutlined, CloseOutlined, DeleteOutlined, RedoOutlined, BarChartOutlined } from '@ant-design/icons';
+import { PlusOutlined, VideoCameraOutlined, UploadOutlined, ExportOutlined, CloseOutlined, DeleteOutlined, RedoOutlined, BarChartOutlined, FolderAddOutlined } from '@ant-design/icons';
 import * as tf from '@tensorflow/tfjs';
 
 import * as log from '~/common/log';
@@ -9,7 +9,7 @@ import Tip from '~/components/Tip';
 import TrainBoard from '~/components/TrainBoard';
 import ExportModal from '~/components/ExportModal';
 import ModelLoading from '~/components/ModelLoading';
-import { canvasStyle, initData, modelParams, trainParams, predictClassColor, mobilenetModelJson, trainParamsInit } from '~/config';
+import { canvasStyle, initData, modelParams, trainParams, predictClassColor, mobilenetModelJson, trainParamsInit, defaultClass } from '~/config';
 import { js } from '~/common/template';
 
 import './index.less';
@@ -61,6 +61,7 @@ export default function WebcamImageClassification () {
   const dataRef = useRef(data);
   const classRef = useRef(data.length);
   const [webcamSwitchIndex, setWebcamSwitchIndex] = useState(-1);
+  const defaultUseRef = useRef(0);
 
   // init model
   useEffect(() => {
@@ -163,23 +164,26 @@ export default function WebcamImageClassification () {
     log.click('webcamImageClassification', {flow_type: 'train_btn_click'});
     let imgDataset = [];
     let imgClass = [];
+    let imgDatasetLength = [];
     for (let i = 0; i < dataRef.current.length; i++) {
       const item = dataRef.current[i];
       if (item.imgData.length === 0) {
         notification.warning({
-          message: 'Data Warning',
-          description: `"${item.imgClassTitle}" requires at least 1 sample. Click "Add Samples" below to begin.`,
+          message: '缺少数据集',
+          description: `"${item.imgClassTitle}" 至少需要 1 个样本。点击左侧面板 “摄像头/上传/默认数据集” 进行样本收集`,
         });
         return;
       }
     }
     dataRef.current = dataRef.current.map(item => {
+      imgDatasetLength.push(item.imgDataset.length);
       imgDataset = imgDataset.concat(item.imgDataset);
       imgClass = imgClass.concat(new Array(item.imgDataset.length).fill(item.imgClass));
       return Object.assign(item, {
         isPredict: true,
       });
     });
+    log.other('webcamImageClassification', {flow_type: 'data_class_datasets_num', value: imgDatasetLength.join(',')});
     setData(dataRef.current);
     trainImgDatasetRef.current = imgDataset;
     trainImgClassRef.current = imgClass;
@@ -259,10 +263,16 @@ export default function WebcamImageClassification () {
   // predict
   // start predict depend predict status
   useEffect(() => {
+    let lastPredictResult = -1;
     const predictLoop = async () => {
       const img = await webcamRef.current.capture();
       const predictRes = await modelRef.current.predict(tf.stack([img])).array();
       setPredictResult(predictRes[0]);
+      const predictResIndex = predictRes[0].indexOf(Math.max(...predictRes[0]));
+      if (lastPredictResult !== predictResIndex) {
+        lastPredictResult = predictResIndex;
+        log.other('webcamImageClassification', {flow_type: 'predict_class_change', value: predictResIndex});
+      }
 
       // Dispose the tensor to release the memory.
       img.dispose();
@@ -411,6 +421,41 @@ export default function WebcamImageClassification () {
     }
   };
 
+  // add default dataset
+  const onAddDefaultDataHandle = async (index) => {
+    log.click('webcamImageClassification', {flow_type: 'data_default_btn_click'});
+    if (defaultUseRef.current > 1) { return; }
+    const currentDefaultData = defaultClass[defaultUseRef.current];
+    defaultUseRef.current++;
+    let len = 20;
+    let imgData = [];
+    let imgDataset = [];
+
+    const updateData = () => {
+      dataRef.current = dataRef.current.map((item, idx) => idx === index ? 
+        Object.assign(item, {
+          imgData: imgData.concat(item.imgData),
+          imgDataset: imgDataset.concat(item.imgDataset),
+        }) : item
+      );
+      setData(dataRef.current);
+    };
+
+    for (let i = 0; i < len; i++) {
+      const src = currentDefaultData[i%4];
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.src = src;
+      image.onload = function() {
+        image.width = this.width;
+        image.height = this.height;
+        imgDataset.push(tf.image.resizeBilinear(tf.browser.fromPixels(image), [canvasStyle.width, canvasStyle.height]));
+        --len === 0 && updateData();
+      };
+      imgData.push(src);
+    }
+  };
+
   // close webcam
   const onCloseWebcamHandle = () => {
     log.click('webcamImageClassification', {flow_type: 'data_takepicture_close_click'});
@@ -449,8 +494,6 @@ export default function WebcamImageClassification () {
   const onClearTakepictureHandle = () => {
     clearTimeout(takepictureTimer);
   };
-
-  console.log('data', data[0].imgClassTitle);
 
   return (
     <div className="webcamImageClassification">
@@ -537,6 +580,13 @@ export default function WebcamImageClassification () {
                             type="file" accept="image/jpg, image/jpeg, image/png"
                             onChange={(e) => {onUploadHandle(e, index);}} />
                         </button>
+                        {
+                          item.imgData.length === 0 && defaultUseRef.current < 2 ?
+                          <button className="webcam-btn" onClick={() => {onAddDefaultDataHandle(index);}}>
+                            <FolderAddOutlined style={{fontSize: '24px'}} />
+                            <span>默认数据集</span>
+                          </button> : null
+                        }
                         <div className="webcam-datas">
                           {
                             item.imgData.map((itm, idx) => (
