@@ -446,6 +446,7 @@ export default function WebcamImageClassification () {
   const initOneDefaultDataset = (index) => {
     if (defaultUseRef.current > 1) { return; }
     const currentDefaultData = defaultClass[defaultUseRef.current];
+    const title = currentDefaultData.title;
     defaultUseRef.current++;
     let len = 20;
     let imgData = [];
@@ -456,13 +457,14 @@ export default function WebcamImageClassification () {
         Object.assign(item, {
           imgData: imgData.concat(item.imgData),
           imgDataset: imgDataset.concat(item.imgDataset),
+          imgClassTitle: title,
         }) : item
       );
       setData(dataRef.current);
     };
 
     for (let i = 0; i < len; i++) {
-      const src = currentDefaultData[i%4];
+      const src = currentDefaultData.data[i%4];
       const image = new Image();
       image.crossOrigin = 'anonymous';
       image.src = src;
