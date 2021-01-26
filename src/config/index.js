@@ -134,12 +134,12 @@ export const defaultClass = [
     ],
   },
   {
-    title: '土豆',
+    title: '手机',
     data: [
-      'https://img.alicdn.com/imgextra/i2/O1CN01Qd1hbu1CQql7P3cvu_!!6000000000076-0-tps-267-189.jpg',
-      'https://img.alicdn.com/imgextra/i2/O1CN01fBfBc92940KVB0V7h_!!6000000008013-0-tps-250-202.jpg',
-      'https://img.alicdn.com/imgextra/i4/O1CN01O1oDVQ26Cl3XcVR5V_!!6000000007626-0-tps-275-183.jpg',
-      'https://img.alicdn.com/imgextra/i2/O1CN01Bj8X0A1qZcydcvQvh_!!6000000005510-0-tps-254-199.jpg',
+      'https://img.alicdn.com/imgextra/i4/O1CN01aRdoyc1aQRBIijFBQ_!!6000000003324-0-tps-237-212.jpg',
+      'https://img.alicdn.com/imgextra/i4/O1CN012SbD711p7OxEybTLd_!!6000000005313-0-tps-300-168.jpg',
+      'https://img.alicdn.com/imgextra/i4/O1CN01a4W3Lv1SecWEwikBX_!!6000000002272-0-tps-272-185.jpg',
+      'https://img.alicdn.com/imgextra/i2/O1CN015cpNGw1peprrqjOra_!!6000000005386-0-tps-275-183.jpg',
     ],
   },
 ];
