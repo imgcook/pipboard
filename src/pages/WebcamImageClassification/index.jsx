@@ -61,6 +61,7 @@ export default function WebcamImageClassification () {
   const dataRef = useRef(data);
   const classRef = useRef(data.length);
   const [webcamSwitchIndex, setWebcamSwitchIndex] = useState(-1);
+  const [defaultDatasetBtn, setDefaultDatasetBtn] = useState(false);
   const defaultUseRef = useRef(0);
 
   // init model
@@ -323,6 +324,11 @@ export default function WebcamImageClassification () {
     classRef.current++;
   };
 
+  // filter data by isDelete
+  const filterCurrentData = () => {
+    return dataRef.current.filter(item => !item.isDelete);
+  };
+
   // filter data by isPredict & isDelete
   const filterPredictData = () => {
     return dataRef.current.filter(item => item.isPredict && !item.isDelete);
@@ -422,8 +428,22 @@ export default function WebcamImageClassification () {
   };
 
   // add default dataset
-  const onAddDefaultDataHandle = async (index) => {
+  const onAddDefaultDataHandleNew = async () => {
     log.click('webcamImageClassification', {flow_type: 'data_default_btn_click'});
+    setDefaultDatasetBtn(true);
+    const currentDataLen = filterCurrentData().length;
+    for (let i = 0; i < 2 - currentDataLen; i++) {
+      onAddDataCardHandle();
+    }
+    dataRef.current.forEach((item, index) => {
+      if (!item.isDelete) {
+        initOneDefaultDataset(index);
+      }
+    });
+  };
+
+  // init a default dataset
+  const initOneDefaultDataset = (index) => {
     if (defaultUseRef.current > 1) { return; }
     const currentDefaultData = defaultClass[defaultUseRef.current];
     defaultUseRef.current++;
@@ -501,6 +521,11 @@ export default function WebcamImageClassification () {
         <ModelLoading loading={loading} />
         {/* data */}
         <Col span={12} className="left-col">
+          {
+            !defaultDatasetBtn ?
+            <Button disabled={defaultDatasetBtn} type="dashed" size="large" block icon={<FolderAddOutlined /> } onClick={onAddDefaultDataHandleNew}>使用默认数据集</Button>
+            : null
+          }
           <Space direction="vertical" size="middle" className="dataList">
             {
               data.map((item, index) => {
@@ -580,13 +605,6 @@ export default function WebcamImageClassification () {
                             type="file" accept="image/jpg, image/jpeg, image/png"
                             onChange={(e) => {onUploadHandle(e, index);}} />
                         </button>
-                        {
-                          item.imgData.length === 0 && defaultUseRef.current < 2 ?
-                          <button className="webcam-btn" onClick={() => {onAddDefaultDataHandle(index);}}>
-                            <FolderAddOutlined style={{fontSize: '24px'}} />
-                            <span>默认数据集</span>
-                          </button> : null
-                        }
                         <div className="webcam-datas">
                           {
                             item.imgData.map((itm, idx) => (
@@ -728,7 +746,7 @@ export default function WebcamImageClassification () {
                         }} />
                       </div>
                     </Col>
-                    <Col span={4} style={{padding: 0}}><Text>{Math.floor(predictResult[index] * 100)}%</Text></Col>
+                    <Col span={4} style={{padding: 0}}><Text>{isNaN(predictResult[index]) ? 0 : Math.floor(predictResult[index] * 100)}%</Text></Col>
                   </div>) : null)
                 }
               </div> : <p>需要先在左侧训练一个模型</p>
