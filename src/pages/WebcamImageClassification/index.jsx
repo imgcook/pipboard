@@ -1,7 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Chart } from '@antv/g2';
-import { Row, Col, Card, Space, Button, Typography, Collapse, List, InputNumber, Select, message, Divider, notification, Spin } from 'antd';
-import { PlusOutlined, VideoCameraOutlined, UploadOutlined, ExportOutlined, CloseOutlined, DeleteOutlined, RedoOutlined, BarChartOutlined, FolderAddOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  Card,
+  Space,
+  Button,
+  Typography,
+  Collapse,
+  List,
+  InputNumber,
+  Select,
+  message,
+  Divider,
+  Spin,
+  Modal,
+} from 'antd';
+import {
+  PlusOutlined,
+  VideoCameraOutlined,
+  UploadOutlined,
+  ExportOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  RedoOutlined,
+  BarChartOutlined,
+  FolderAddOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import * as tf from '@tensorflow/tfjs';
 
 import * as log from '~/common/log';
@@ -169,9 +195,20 @@ export default function WebcamImageClassification () {
     for (let i = 0; i < dataRef.current.length; i++) {
       const item = dataRef.current[i];
       if (item.imgData.length === 0) {
-        notification.warning({
-          message: '缺少数据集',
-          description: `"${item.imgClassTitle}" 至少需要 1 个样本。点击左侧面板 “摄像头/上传/默认数据集” 进行样本收集`,
+        Modal.confirm({
+          title: '缺少数据集',
+          icon: <ExclamationCircleOutlined />,
+          content: <div>
+            <p>&quot;{item.imgClassTitle}&ldquo; 至少需要 1 个样本：点击左侧面板 “摄像头/上传” 进行样本收集</p>
+            <p>或点击 <Text strong>默认数据集</Text> 按钮直接开始训练</p>
+          </div>,
+          okText: '关闭',
+          cancelText: '默认数据集',
+          onCancel: () => {
+            onAddDefaultDataHandleNew(undefined, true);
+            log.click('webcamImageClassification', {flow_type: 'train_btn_click_use_default'});
+            return Promise.resolve();
+          },
         });
         return;
       }
@@ -428,18 +465,21 @@ export default function WebcamImageClassification () {
   };
 
   // add default dataset
-  const onAddDefaultDataHandleNew = async () => {
+  const onAddDefaultDataHandleNew = async (e, autoTrain = false) => {
     log.click('webcamImageClassification', {flow_type: 'data_default_btn_click'});
     setDefaultDatasetBtn(true);
     const currentDataLen = filterCurrentData().length;
     for (let i = 0; i < 2 - currentDataLen; i++) {
       onAddDataCardHandle();
     }
-    dataRef.current.forEach((item, index) => {
+    for (const [index, item] of dataRef.current.entries()) {
       if (!item.isDelete) {
-        initOneDefaultDataset(index);
+        await initOneDefaultDataset(index);
       }
-    });
+    }
+    if (autoTrain) {
+      onTrainHandle();
+    }
   };
 
   // init a default dataset
@@ -451,31 +491,33 @@ export default function WebcamImageClassification () {
     let len = 20;
     let imgData = [];
     let imgDataset = [];
-
-    const updateData = () => {
-      dataRef.current = dataRef.current.map((item, idx) => idx === index ? 
-        Object.assign(item, {
-          imgData: imgData.concat(item.imgData),
-          imgDataset: imgDataset.concat(item.imgDataset),
-          imgClassTitle: title,
-        }) : item
-      );
-      setData(dataRef.current);
-    };
-
-    for (let i = 0; i < len; i++) {
-      const src = currentDefaultData.data[i%4];
-      const image = new Image();
-      image.crossOrigin = 'anonymous';
-      image.src = src;
-      image.onload = function() {
-        image.width = this.width;
-        image.height = this.height;
-        imgDataset.push(tf.image.resizeBilinear(tf.browser.fromPixels(image), [canvasStyle.width, canvasStyle.height]));
-        --len === 0 && updateData();
+    return new Promise((resolve) => {
+      const updateData = () => {
+        dataRef.current = dataRef.current.map((item, idx) => idx === index ? 
+          Object.assign(item, {
+            imgData: imgData.concat(item.imgData),
+            imgDataset: imgDataset.concat(item.imgDataset),
+            imgClassTitle: title,
+          }) : item
+        );
+        setData(dataRef.current);
+        resolve();
       };
-      imgData.push(src);
-    }
+  
+      for (let i = 0; i < len; i++) {
+        const src = currentDefaultData.data[i%4];
+        const image = new Image();
+        image.crossOrigin = 'anonymous';
+        image.src = src;
+        image.onload = function() {
+          image.width = this.width;
+          image.height = this.height;
+          imgDataset.push(tf.image.resizeBilinear(tf.browser.fromPixels(image), [canvasStyle.width, canvasStyle.height]));
+          --len === 0 && updateData();
+        };
+        imgData.push(src);
+      }
+    });
   };
 
   // close webcam
