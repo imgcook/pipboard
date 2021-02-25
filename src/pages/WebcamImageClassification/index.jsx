@@ -194,7 +194,7 @@ export default function WebcamImageClassification () {
     let imgDatasetLength = [];
     for (let i = 0; i < dataRef.current.length; i++) {
       const item = dataRef.current[i];
-      if (item.imgData.length === 0) {
+      if (item.imgData.length === 0 && !item.isDelete) {
         Modal.confirm({
           title: '缺少数据集',
           icon: <ExclamationCircleOutlined />,
@@ -213,7 +213,7 @@ export default function WebcamImageClassification () {
         return;
       }
     }
-    dataRef.current = dataRef.current.map(item => {
+    dataRef.current = filterCurrentData().map(item => {
       imgDatasetLength.push(item.imgDataset.length);
       imgDataset = imgDataset.concat(item.imgDataset);
       imgClass = imgClass.concat(new Array(item.imgDataset.length).fill(item.imgClass));
