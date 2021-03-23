@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Layout from '~/layout/BaseLayout';
 import routeConfig from './config';
@@ -61,6 +61,7 @@ export default function Router() {
             />
           );
         })}
+        <Redirect to="/" />
       </Switch>
     </HashRouter>
   );
